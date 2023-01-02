@@ -1,0 +1,1 @@
+window.ALL_CRATES = ["bincode","byteorder","cfg_if","cudb","getrandom","libc","proc_macro2","quote","serde","serde_derive","syn","unicode_xid","uuid"];
