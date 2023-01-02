@@ -1,0 +1,13 @@
+http://pages.cs.wisc.edu/~dbbook/openAccess/thirdEdition/slides/slides3ed-english/Ch3_Rel_Model.pdf
+
+https://cs.slu.edu/~goldwamh/class/slu/csci371/2003_Fall/lectures/design/
+
+https://en.wikipedia.org/wiki/Foreign_key
+
+https://stackoverflow.com/questions/10982992/is-it-fine-to-have-foreign-key-as-primary-key
+
+https://www.youtube.com/watch?v=ZOJ4J0UxiX0
+
+https://www.lucidchart.com/pages/er-diagrams
+
+https://www.lucidchart.com/pages/ER-diagram-symbols-and-meaning

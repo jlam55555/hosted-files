@@ -1,0 +1,5 @@
+https://www.veracode.com/security/sql-injection
+
+https://www.hacksplaining.com/exercises/sql-injection
+
+https://sqlzoo.net/hack/

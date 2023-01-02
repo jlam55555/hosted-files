@@ -1,0 +1,9 @@
+https://redis.io/documentation
+
+https://static.simonwillison.net/static/2010/redis-tutorial/
+
+https://www.openmymind.net/2011/11/8/Redis-Zero-To-Master-In-30-Minutes-Part-1/
+
+https://www.youtube.com/watch?v=Hbt56gFj998
+
+https://try.redis.io/

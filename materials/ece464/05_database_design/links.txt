@@ -1,0 +1,15 @@
+http://www.agiledata.org/essays/keys.html
+
+https://www.youtube.com/watch?v=l5DCnCzDb8g
+
+https://www.youtube.com/watch?v=cepspxPAUTA
+
+https://www.singlestore.com/blog/third-normal-form/
+
+https://www3.ntu.edu.sg/home/ehchua/programming/sql/Relational_Database_Design.html
+
+https://hackernoon.com/relational-databases-designing-schema-writing-a-query-8e714fce689d
+
+https://www.red-gate.com/simple-talk/sql/learn-sql-server/facts-and-fallacies-about-first-normal-form/
+
+https://www.red-gate.com/simple-talk/sql/database-administration/five-simple-database-design-errors-you-should-avoid/

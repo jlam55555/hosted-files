@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="ca4abd51-2557-4130-bd2a-d3f67bc74bee" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CodeStyleSettingsInfer">
+    <option name="done" value="true" />
+  </component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="1" />
+  </component>
+  <component name="ProjectId" id="1jIwYN3LS51xKmwnq8HYhg68ENH" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Documents/sable_evans" />
+    <property name="project.structure.last.edited" value="SDKs" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+  </component>
+  <component name="SbtLocalSettings">
+    <option name="projectSyncType">
+      <map>
+        <entry key="$USER_HOME$/exercism/scala/hello-world" value="PREVIEW" />
+        <entry key="$USER_HOME$/exercism/scala/house" value="PREVIEW" />
+        <entry key="$USER_HOME$/exercism/scala/leap" value="PREVIEW" />
+        <entry key="$USER_HOME$/exercism/scala/matching-brackets" value="PREVIEW" />
+        <entry key="$USER_HOME$/exercism/scala/two-fer" value="PREVIEW" />
+      </map>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ca4abd51-2557-4130-bd2a-d3f67bc74bee" name="Default Changelist" comment="" />
+      <created>1603504959903</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1603504959903</updated>
+      <workItem from="1603504962241" duration="118000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="743" y="286" width="428" height="481" key="FileChooserDialogImpl" timestamp="1603505080220">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="743" y="286" width="428" height="481" key="FileChooserDialogImpl/0.0.1920.1080@0.0.1920.1080" timestamp="1603505080220" />
+    <state x="623" y="239" width="672" height="678" key="search.everywhere.popup" timestamp="1603504965402">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="623" y="239" width="672" height="678" key="search.everywhere.popup/0.0.1920.1080@0.0.1920.1080" timestamp="1603504965402" />
+  </component>
+</project>

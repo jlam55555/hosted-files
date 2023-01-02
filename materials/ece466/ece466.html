@@ -1,0 +1,217 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"></head><body><h1><center>ECE 466 - Compilers</center></h1>
+<br>
+<h2>Resources</h2>
+The optional text for this class is "The Dragon Book":
+<br>
+<p>
+Aho, Alfred V., Lam, Monica S., Sethi, Ravi
+and Ullman, Jeffrey D.: <i>Compilers: Principles, Techniques,
+and Tools.</i>.  2nd edition.   Addison-Wesley, 2006.
+
+<br>
+</p><p>
+The first edition of the textbook is also quite workable, especially
+for the earlier units of this course.
+</p><p>
+Students might find the O'Reilly book on Lex and Yacc (two tools
+which are used to automate the front-end of the compiler) helpful.
+However, much of the information in this book is dated and available
+for free online or in the man pages, which students should absolutely
+read thoroughly!
+<br>
+</p><p>
+The make program will prove very useful in developing the compiler.
+There is an O'Reilly book on make, but again for the purposes of
+this project, there is enough free information available online.
+<br>
+</p><p>
+The definitive reference for the C language is the ISO standard.
+The 1999 standard introduced a number of language extensions, some
+of which we may chose to ignore in class.  A working draft of that
+standard was openly available and a copy may be <a href="http://faculty.cooper.edu/hak/ece466/n1124.pdf">
+downloaded here</a>.  A more recent revision known as "C11" which was
+adopted in 2011 is <a href="http://faculty.cooper.edu/hak/ece466/n1570.pdf">here</a>
+</p><p>
+For the purposes of this course, in which we are not actually trying to
+build a production compiler, any of these standards can be used for
+reference.
+<br>
+</p><p>
+Another recommended book is:
+<br>
+Harbison, Samuel P and Steele, Guy L.: <i>C: A reference manual</i>.
+5th edition.  Prentice Hall, 2006. 
+<br>
+</p><p>
+This is basically a regurgitation of the ISO C standard, but with better
+examples and explanations, and a discussion of backwards compatibility
+issues with ANSI C (1989 standard) and classic K&amp;R C.
+</p><h2>Expectations</h2>
+<p>
+This is a graduate-level course.  Student are expected to do the
+necessary readings and research on their own.  Lecture notes will
+be posted here, but they do not comprise the entirety of the course material
+for which the student is responsible.
+The course is divided into several units, outlines of which are
+presented below.  These units will not necessarily be confined to
+a single week.
+<br>
+Note: lecture notes are in PostScript, which can be output directly
+to any PostScript printer, or viewed with a free viewer such as ghostscript.
+Assignments may be in text or PostScript form.
+</p><p>
+<i>Special COVID note:</i> Online lectures will follow the lecture notes,
+all of which are published here in advance.  It is highly suggested that you
+pre-read these notes.  It is also highly appreciated that in this graduate
+level course, you participate in online class and are prepared to discuss
+the material, ask questions, etc.
+<br>
+</p><hr>
+<h2><center>Unit 1 - Intro/Lexical</center></h2>
+Topics include: overview of the compilation process, front-end vs back-end,
+the role of lexical, syntactical and semantic analysis, regular expressions,
+finite automata construction, lex/flex programs.
+<br><a href="http://faculty.cooper.edu/hak/ece466/lecture-u01.ps">Lecture Notes (PS)</a>.
+<br>
+<h3>Suggested readings and activities</h3>
+<br>
+* Read the documentation for flex.  Try out some examples.
+<br>
+* Read section 6.4 (Lexical Elements) of the C language standard.  And/or
+read Chapter 2 of Harbison and Steele.
+<br>
+* Read Chapter 3 of the dragon book.  Don't bother reading chapters 1 and 2;
+they will just confuse you.
+<br>
+<h3>Assignment 1 - Lexer</h3>
+The first assignment is to write the lexical analysis phase of the C compiler.
+To stay on track, this should be completed by ~ Feb 9
+<br>
+<hr>
+<h2><center>Unit 2 - Syntactical Analysis (Parsing) </center></h2>
+Topics: context-free grammars, derivations and parse trees, LL and LR 
+grammars, top-down and bottom-up parsing, overview of yacc/bison.  
+Ambiguous and non-LALR grammars and resolution, precedence/associativity.
+Embedded semantic actions, synthesized vs inherited attributes.
+<h3>Suggested study</h3>
+<br>
+* Read the entire Bison manual.
+<br>
+* Read Chapters 4 and 5 of the Dragon Book.
+<br>
+* Read Chapter 7 (Expressions) in H&amp;S.  And/or read section 6.5 of the C standard.
+<br>
+<a href="http://faculty.cooper.edu/hak/ece466/lecture-u02.ps">Lecture Notes (PS Format)</a>
+<br>
+<h3>Assignment 2 - Expression Parsing</h3>
+This is the first exploration of Bison.  You will write an
+interpreter which understands and evaluates the C expression syntax (limited
+subset) and transforms it into Abstract Syntax Trees.
+<hr>
+<br>
+<center><h2>Unit 3 -- Error handling and memory allocation</h2></center>
+<p>
+Topics: Errors vs warnings, error recovery, error reporting,
+memory allocation strategies within the compiler.
+<a href="http://faculty.cooper.edu/hak/ece466/lecture-u03.ps">Lecture Notes (PS Format)</a>
+<br>
+<br>
+</p><hr>
+<center><h2>Unit 4 -- Semantic Analysis</h2></center>
+<p>
+Topics: compile-time vs run-time, syntax-directed translation, abstract
+syntax trees, type systems, symbol tables and scoping rules, feedback
+between lexer, parser and semantic stages, overview of C language
+type and namespace issues.
+<br>
+<a href="http://faculty.cooper.edu/hak/ece466/lecture-u04.ps">Lecture Notes (PS Format)</a>
+<br>
+</p><h3>Suggested Readings</h3>
+<br>
+* Sections 6.2 and 6.7 of the C language standard.
+<br>
+* H &amp; S, chapters 4 and 5.
+<br>
+Assignment #3: Parsing declarations, representing
+types, managing symbol tables.  There are some files <a href="http://faculty.cooper.edu/hak/ece466/ttests/">here</a>
+that you might find useful in testing your code.  They are not intended
+as exhaustive compliance tests.  As with previous test cases, your
+output doesn't have to match my sample output exactly.
+<hr>
+<br>
+<hr>
+Assignment #4: Completion of the AST to include
+all statements.  There are a few <a href="http://faculty.cooper.edu/hak/ece466/atests/">test cases</a> along
+with example AST output.  As always, these are examples only and there
+is no requirement that your output match up exactly.
+<br>
+<center><h2>Unit 5 -- Intermediate Representations</h2></center>
+<p>
+Graphical vs linear IR, internal vs external IR.  1-address and 3-address
+linear IRs.  Overview of IR approaches of popular languages including
+Perl, Python, Java, PHP.  Overview of LLVM IR.  Techniques for generating
+IR from AST.
+<br>
+<a href="http://faculty.cooper.edu/hak/ece466/lecture-u05.ps">Lecture notes</a>
+<br>
+</p><h3>Assignment 5 -- Generation of Quads</h3>
+<p>
+Having completed AST generation and declaration/symbol handling for the
+entire language, it is now time to enter the final phase "how do we do it?"
+<br>
+</p><hr>
+<center><h2>Unit 6 -- Architecture-Neutral IR Optimization</h2></center>
+<p>
+Theory of optimization at the quad level.  Examples of several optimization
+algorithms.
+<br>
+<a href="http://faculty.cooper.edu/hak/ece466/lecture-u06.ps">Lecture notes</a>
+<br>
+</p><hr>
+<center><h2>Unit 7 -- Target Environment</h2></center>
+<p>
+We'll explore the X86 assembly language in some depth, with special
+attention to variables, addressing modes, and function calling/register
+usage conventions.  If time permits, we'll contrast this CISC architecture
+with a RISC architecture.
+<br>
+</p><hr>
+<center><h2>Unit 8 -- Target Code Generation</h2></center>
+<p>
+Overview of Instruction selection and Register Allocation.  
+Challenges in one- and two-address architectures.
+<br>
+<a href="http://faculty.cooper.edu/hak/ece466/lecture-u08.ps">Lecture notes unit 8</a>
+<br>
+</p><h3>Assignment 6 -- Generation of Quads</h3>
+<p>It's the final curtain!
+<br>
+Here are some resources to help you complete this last assignment:
+<i>Note: these are old, I'm looking for more recent versions</i>
+<br>
+<a href="http://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383.pdf">Intel X86 reference manual (over 2000 pages!)</a>
+<i>Note that the instruction set is presented according to Intel syntax,
+ which differs from the "UNIX" or "AT&amp;T" syntax which is used on 
+Solaris, Linux and BSD systems.</i>
+<br>
+<a href="http://faculty.cooper.edu/hak/ece466/817-5477.pdf">Sun Microsystems x86 Assembly Language Reference</a>
+<i>This booklet presents an overview of the X86 assembler in UNIX notation and
+provides a translation of opcode names and addressing mode nomenclature between
+UNIX and Intel formats.  It does not describe the individual instructions
+in detail </i>
+<br>
+<a href="http://faculty.cooper.edu/hak/ece466/816-1681.pdf"> SPARC Assembly Reference Manual</a>
+<i>Provides an overview of the SPARC V8 and V9 assemblers.  Doesn't give a
+detailed explanation of each instruction but there is a summary of all
+instructions and addressing modes</i>
+<br>
+<a href="http://faculty.cooper.edu/hak/ece466/sparcv9.pdf">SPARC Architecture Manual</a>
+<i>Provides detailed coverage of the SPARC V9 architecture including
+operation of the processor, register windowing, addressing modes,
+opcodes and instruction formats.  This manual was written by the
+SPARC International group and as such is OS and assembler agnostic.
+But unlike the Intel reference manuals, the notation used follows
+the UNIX standard very closely.</i>
+<br>
+</p></body></html>

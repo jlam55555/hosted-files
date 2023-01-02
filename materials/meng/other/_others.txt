@@ -1,0 +1,3 @@
+Papers that I cannot find the PDF for:
+
+- Frequent Background Polling on a Shared Thread, using Light-Weight Compiler Interrupts

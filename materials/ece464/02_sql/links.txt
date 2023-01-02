@@ -1,0 +1,34 @@
+https://www.mysqltutorial.org/mysql-join/
+
+https://www.youtube.com/watch?v=zbMHLJ0dY4w
+
+https://mystery.knightlab.com/
+
+https://selectstarsql.com/
+
+https://dev.mysql.com/doc/refman/8.0/en/introduction.html
+
+https://dev.mysql.com/doc/refman/8.0/en/select.html
+
+https://dev.mysql.com/doc/refman/8.0/en/aggregate-functions.html
+
+https://dev.mysql.com/doc/refman/8.0/en/comparison-operators.html
+
+https://learn.co/lessons/sql-complex-joins-readme
+
+https://dev.mysql.com/doc/refman/8.0/en/create-table.html
+
+https://dev.mysql.com/doc/refman/8.0/en/create-view.html
+
+https://dev.mysql.com/doc/refman/8.0/en/create-temporary-table.html
+
+https://dev.mysql.com/doc/refman/5.7/en/case.html
+
+https://dev.mysql.com/doc/refman/8.0/en/create-event.html
+
+https://dev.mysql.com/doc/refman/8.0/en/trigger-syntax.html
+
+https://www.sitepoint.com/database-triggers-events/
+
+Additional topics:
+- NULL, nested query vs. temporary tables, transactions, commit, rollback

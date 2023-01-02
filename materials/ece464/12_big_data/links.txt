@@ -1,0 +1,9 @@
+https://www.scnsoft.com/blog/spark-vs-hadoop-mapreduce
+
+https://www.youtube.com/watch?v=OoEpfb6yga8
+
+https://hadoop.apache.org/docs/r1.2.1/hdfs_design.html
+
+https://en.wikipedia.org/wiki/Enron_Corpus
+
+https://www.datanami.com/2020/09/04/10-big-data-statistics-that-will-blow-your-mind/

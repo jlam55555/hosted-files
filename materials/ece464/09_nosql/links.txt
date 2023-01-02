@@ -1,0 +1,9 @@
+https://martinfowler.com/articles/nosql-intro
+
+https://www.youtube.com/watch?v=qI_g07C_Q5I
+
+https://www.youtube.com/watch?v=uD3p_rZPBUQ
+
+http://www.redbook.io/ch6-isolation.html
+
+https://en.wikipedia.org/wiki/CAP_theorem
