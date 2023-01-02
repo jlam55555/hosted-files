@@ -1,0 +1,251 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>ECE302 Project 5</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-05-17"><meta name="DC.source" content="proj5.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>ECE302 Project 5</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Steven Lee &amp; Jonathan Lam</a></li><li><a href="#2">Part 1</a></li><li><a href="#3">Part 2</a></li></ul></div><h2 id="1">Steven Lee &amp; Jonathan Lam</h2><pre class="codeinput">clc;
+clear;
+close <span class="string">all</span>;
+</pre><h2 id="2">Part 1</h2><pre class="codeinput"><span class="comment">%                        d[n]</span>
+<span class="comment">%                         |</span>
+<span class="comment">%         +------+        v        +------+</span>
+<span class="comment">% s[n] -&gt; | c[n] | ----&gt; (+) ----&gt; | h[n] | -&gt; shat[n]</span>
+<span class="comment">%         +------+  x[n]      r[n] +------+</span>
+<span class="comment">%</span>
+<span class="comment">% Calculations: (note: * means convolution)</span>
+<span class="comment">%</span>
+<span class="comment">% R_ss[n] = E[s[m]s[m+n]] = { 1   if n=0 } = delta[n]</span>
+<span class="comment">%                           { 0   else   }</span>
+<span class="comment">%</span>
+<span class="comment">% Use eq. 11.8 and fact that s, d are uncorrelated:</span>
+<span class="comment">% R_rs[n] = R_xs[n] = R_ss[n] * c[n] = c[n]</span>
+<span class="comment">%</span>
+<span class="comment">% Use fact that s, d are uncorrelated:</span>
+<span class="comment">% R_rr[n] = R_xx[n] + R_dd[n]</span>
+<span class="comment">%</span>
+<span class="comment">% Autocorrelation of gaussian white noise:</span>
+<span class="comment">% R_dd[n] = sigma^2 * delta[n]</span>
+<span class="comment">% (we set sigma^2=1)</span>
+<span class="comment">%</span>
+<span class="comment">% based on Wiener-Khinchin theorem:</span>
+<span class="comment">% R_xx[n] = R_ss[n] * R_cc[n]</span>
+<span class="comment">% where R_cc[n] = autocorrelation of c[n] = c*c</span>
+
+<span class="comment">% We have tried to replicate the autocorrelation calculation</span>
+<span class="comment">% R_xy[n] using the xcorr function xcorr(x, y, N, 'biased'))</span>
+<span class="comment">% and the autocorrelations seems correct.</span>
+</pre><h2 id="3">Part 2</h2><pre class="codeinput"><span class="comment">% arbitrary choose a value for sigma^2</span>
+sig2 = 0.5;
+
+<span class="comment">% M is number of samples</span>
+M = 1e6;
+
+<span class="comment">% create random vectors</span>
+s = 2*randi(2, [M 1]) - 3;
+d = sqrt(sig2) * randn([M 1]);
+
+<span class="comment">% need to pad c so that convolution with</span>
+<span class="comment">% type "same" works correctly</span>
+c = [0 0 1 .2 .4];
+
+<span class="comment">% precompute r -- doesn't depend on h</span>
+r = conv(s, c, <span class="string">'same'</span>) + d;
+
+<span class="comment">% N is the length of the filter h</span>
+<span class="keyword">for</span> N = [4 6 10]
+	<span class="comment">% set up normal equations</span>
+	R_rr = zeros([N, 1]);
+	R_rr(1:3) = [1.2+sig2 .28 .4];
+
+	R_sr = zeros([N, 1]);
+	R_sr(1:3) = [1 .2 .4].';
+
+	R = R_rr(abs((1:N) - (1:N).') + 1);
+
+	<span class="comment">% solve normal equation</span>
+	<span class="comment">% Rh = R_sr =&gt; h = inv(R)*R_sr</span>
+	h = R \ R_sr(1:N);
+
+	<span class="comment">% need to pad h so that it's correctly centered</span>
+	<span class="comment">% so that conv w/ "same" padding works correctly</span>
+	h = [zeros([N-1 1]); h];
+
+	<span class="comment">% calculate estimate with our filter</span>
+	s_hat = conv(r, h, <span class="string">'same'</span>);
+
+	<span class="comment">% calculate and print mse</span>
+	mse = mean((s-s_hat).^2);
+	acc = mean(sign(s) == sign(s_hat));
+	fprintf(<span class="string">'N=%d: MSE=%f; accuracy=%f\n'</span>, N, mse, acc);
+<span class="keyword">end</span>
+
+<span class="comment">% For some reason, increasing N does not improve MSE. However, the</span>
+<span class="comment">% MSE is fairly low, and the accuracy (determined by the relative</span>
+<span class="comment">% frequency that s_hat predicts the correct sign of s) is definitely</span>
+<span class="comment">% above random guessing (0.5). This may be because the coefficients</span>
+<span class="comment">% of h[n] for n&gt;4 are relatively small, so increasing N does not</span>
+<span class="comment">% improve performance. However, changing sigma^2 affects performance</span>
+<span class="comment">% as expected.</span>
+</pre><pre class="codeoutput">N=4: MSE=0.483401; accuracy=0.843640
+N=6: MSE=0.486793; accuracy=0.841784
+N=10: MSE=0.486945; accuracy=0.841678
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% ECE302 Project 5
+%% Steven Lee & Jonathan Lam
+
+clc;
+clear;
+close all;
+
+%% Part 1
+
+%                        d[n]
+%                         |
+%         +REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH+        v        +REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH+
+% s[n] -> | c[n] | REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH> (+) REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH> | h[n] | -> shat[n]
+%         +REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH+  x[n]      r[n] +REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH+
+%
+% Calculations: (note: * means convolution)
+%
+% R_ss[n] = E[s[m]s[m+n]] = { 1   if n=0 } = delta[n]
+%                           { 0   else   }
+%
+% Use eq. 11.8 and fact that s, d are uncorrelated:
+% R_rs[n] = R_xs[n] = R_ss[n] * c[n] = c[n]
+%
+% Use fact that s, d are uncorrelated:
+% R_rr[n] = R_xx[n] + R_dd[n]
+% 
+% Autocorrelation of gaussian white noise:
+% R_dd[n] = sigma^2 * delta[n]
+% (we set sigma^2=1)
+%
+% based on Wiener-Khinchin theorem:
+% R_xx[n] = R_ss[n] * R_cc[n]
+% where R_cc[n] = autocorrelation of c[n] = c*c
+
+% We have tried to replicate the autocorrelation calculation
+% R_xy[n] using the xcorr function xcorr(x, y, N, 'biased'))
+% and the autocorrelations seems correct.
+
+%% Part 2
+
+% arbitrary choose a value for sigma^2
+sig2 = 0.5;
+
+% M is number of samples
+M = 1e6;
+
+% create random vectors
+s = 2*randi(2, [M 1]) - 3;
+d = sqrt(sig2) * randn([M 1]);
+
+% need to pad c so that convolution with
+% type "same" works correctly
+c = [0 0 1 .2 .4];
+
+% precompute r REPLACE_WITH_DASH_DASH doesn't depend on h
+r = conv(s, c, 'same') + d;
+
+% N is the length of the filter h
+for N = [4 6 10]
+	% set up normal equations
+	R_rr = zeros([N, 1]);
+	R_rr(1:3) = [1.2+sig2 .28 .4];
+	
+	R_sr = zeros([N, 1]);
+	R_sr(1:3) = [1 .2 .4].';
+
+	R = R_rr(abs((1:N) - (1:N).') + 1);
+
+	% solve normal equation
+	% Rh = R_sr => h = inv(R)*R_sr
+	h = R \ R_sr(1:N);
+
+	% need to pad h so that it's correctly centered
+	% so that conv w/ "same" padding works correctly
+	h = [zeros([N-1 1]); h];
+
+	% calculate estimate with our filter
+	s_hat = conv(r, h, 'same');
+
+	% calculate and print mse
+	mse = mean((s-s_hat).^2);
+	acc = mean(sign(s) == sign(s_hat));
+	fprintf('N=%d: MSE=%f; accuracy=%f\n', N, mse, acc);
+end
+
+% For some reason, increasing N does not improve MSE. However, the
+% MSE is fairly low, and the accuracy (determined by the relative
+% frequency that s_hat predicts the correct sign of s) is definitely
+% above random guessing (0.5). This may be because the coefficients
+% of h[n] for n>4 are relatively small, so increasing N does not
+% improve performance. However, changing sigma^2 affects performance
+% as expected.
+##### SOURCE END #####
+--></body></html>

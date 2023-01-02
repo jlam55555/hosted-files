@@ -1,0 +1,595 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<base href="/assets/ece302/">
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>proj4</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-04-19"><meta name="DC.source" content="proj4.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1></h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">ECE302 Project 4</a></li><li><a href="#2">q1a</a></li><li><a href="#3">(still q1a) sanity check: plot eta vs. accuracy</a></li><li><a href="#4">q1b&amp;c</a></li><li><a href="#5">q1d</a></li><li><a href="#6">q1e</a></li><li><a href="#7">(still q1e) sanity check: plot eta vs. accuracy</a></li><li><a href="#8">(still q1e) plotting ROCs</a></li><li><a href="#9">q2: MAP estimate on fisheriris</a></li></ul></div><h2 id="1">ECE302 Project 4</h2><p>Steven Lee &amp; Jonathan Lam</p><p>This project requires the Communications toolkit (for qfunc) and the Probability and Statistics toolkit (for mvnpdf)</p><p>Scratch work performed on desmos: <a href="https://www.desmos.com/calculator/lchs3gr6oy">https://www.desmos.com/calculator/lchs3gr6oy</a></p><p>MATLAB published version: <a href="http://files.lambdalambda.ninja/reports/20-21_spring/ece302_proj4.lam_lee.html">http://files.lambdalambda.ninja/reports/20-21_spring/ece302_proj4.lam_lee.html</a></p><pre class="codeinput">set(0,<span class="string">'defaultTextInterpreter'</span>,<span class="string">'latex'</span>);
+clc; clear; close <span class="string">all</span>;
+</pre><h2 id="2">q1a</h2><p>perform MAP estimation on a random signal plus equivariance gaussian noise, and compare accuracy to theoretical accuracy</p><pre class="codeinput">N = 1e4;        <span class="comment">% sample size</span>
+p0 = 0.8;       <span class="comment">% prior probability of no-target</span>
+sigma = 0.5;    <span class="comment">% stdev</span>
+a = 1;          <span class="comment">% constant value for A</span>
+
+<span class="comment">% A is the source signal, X is the gaussian additive noise</span>
+A = a*(rand(N,1) &gt; 0.8);
+X = sigma*randn(N, 1);
+Y = X + A;
+
+<span class="comment">% MAP decision boundary: optimal (lowest) probability of error</span>
+<span class="comment">% to derive: f(eta|H0)*P0 = f(eta|H1)*P1, solve for eta (decision boundary)</span>
+dec_boundary = (2*sigma^2*log(p0/(1-p0)) + a^2)/(2*a);
+
+emp_accuracy = mean((Y &gt; dec_boundary) == A)
+theo_accuracy = p0*qfunc(-dec_boundary/sigma) <span class="keyword">...</span>
+    + (1-p0)*qfunc((dec_boundary-a)/sigma)
+</pre><pre class="codeoutput">
+emp_accuracy =
+
+    0.8901
+
+
+theo_accuracy =
+
+    0.8879
+
+</pre><h2 id="3">(still q1a) sanity check: plot eta vs. accuracy</h2><p>(to demonstrate that this is actually the best error)</p><pre class="codeinput">etas = linspace(-5, 5, 1e3);
+accuracies = zeros(length(etas), 1);
+<span class="keyword">for</span> i=1:length(etas)
+    accuracies(i) = mean((Y &gt; etas(i)) == A);
+<span class="keyword">end</span>
+
+figure();
+hold(<span class="string">'on'</span>);
+plot(etas, accuracies);
+xline(dec_boundary);
+yline(theo_accuracy, <span class="string">'r'</span>);
+plot(etas, normpdf(etas, 0, sigma)*p0, <span class="string">'k:'</span>);
+plot(etas, normpdf(etas, a, sigma)*(1-p0), <span class="string">'k:'</span>);
+hold(<span class="string">'off'</span>);
+ylabel(<span class="string">'Accuracy'</span>);
+xlabel(<span class="string">'$$\eta$$'</span>);
+ylim([0 1]);
+title(<span class="string">'Accuracy vs. decision boundary'</span>);
+legend([<span class="string">"Empirical accuracy"</span>, <span class="string">"Theoretical optimal boundary"</span>, <span class="keyword">...</span>
+    <span class="string">"Theoretical optimal accuracy"</span>, <span class="string">"MAP probabilities"</span>], <span class="keyword">...</span>
+    <span class="string">'Location'</span>, <span class="string">'northwest'</span>);
+</pre><img vspace="5" hspace="5" src="proj4_01.png" alt=""> <h2 id="4">q1b&amp;c</h2><p>plotting receiver-operator characteristic at various SNR levels (SNR never explicitly calculated, just mess with sigma); also indicate where the MAP boundary occurs and where the boundary that optimizes the cost metric in q1c occurs on the ROC</p><pre class="codeinput">etas = linspace(-10, 10, 1e3);
+sigmas = logspace(-1, 1, 5);
+P_F = zeros(length(etas), 1);
+P_D = zeros(length(etas), 1);
+
+<span class="comment">% iterate over decision boundary</span>
+<span class="comment">% and iterate over several SNRs</span>
+<span class="keyword">for</span> j=1:length(sigmas)
+    X = sigmas(j)*randn(N, 1);
+    Y = X + A;
+
+    <span class="comment">% MAP rule: minimizing probability of error</span>
+    map_boundary = (2*sigmas(j)^2*log(p0/(1-p0)) + a^2)/(2*a);
+
+    <span class="comment">% q1c</span>
+    <span class="comment">% 8.8 in detection theory pdf</span>
+    <span class="comment">% (C01 - C11)*P1*f(y|H1) = (C10 - C00)*P0*f(y|H0)</span>
+    <span class="comment">% Now set C11=C00=0 (as before), but set C01=10*C10 (a.o.t. C01=C10)</span>
+    <span class="comment">%</span>
+    <span class="comment">% basically changes the coefficients from (P1,P0) to (10*P1, P0)</span>
+    <span class="comment">% see new factor of 10</span>
+    q1c_boundary = (2*sigmas(j)^2*log(p0/(10*(1-p0))) + a^2)/(2*a);
+
+    <span class="comment">% find closest points to optimal decision boundaries</span>
+    [~, q1c_i] = min(abs(etas-map_boundary));
+    [~, map_i] = min(abs(etas-q1c_boundary));
+
+    <span class="keyword">for</span> i=1:length(etas)
+        A_hat = Y &gt; etas(i);
+
+        P_D(i) = sum((A_hat == 1) &amp; (A == a)) / sum(A == a);
+        P_F(i) = sum((A_hat == 1) &amp; (A == 0)) / sum(A == 0);
+    <span class="keyword">end</span>
+
+    figure();
+    hold(<span class="string">'on'</span>);
+    plot(P_F, P_D);
+    plot(P_F(map_i), P_D(map_i), <span class="string">'g*'</span>);
+    plot(P_F(q1c_i), P_D(q1c_i), <span class="string">'r*'</span>);
+    hold(<span class="string">'off'</span>);
+    ylabel(<span class="string">'$$P_D$$'</span>);
+    xlabel(<span class="string">'$$P_F$$'</span>);
+    title(sprintf(<span class="string">'Receiver Operating Characteristic $$\\sigma=%f$$'</span>, <span class="keyword">...</span>
+        sigmas(j)));
+    legend([<span class="string">"ROC"</span>, sprintf(<span class="string">'MAP boundary (\\eta=%f)'</span>, map_boundary), <span class="keyword">...</span>
+        sprintf(<span class="string">'Q1c modified cost boundary (\\eta=%f)'</span>, q1c_boundary)],<span class="keyword">...</span>
+        <span class="string">'Location'</span>, <span class="string">'southeast'</span>);
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="proj4_02.png" alt=""> <img vspace="5" hspace="5" src="proj4_03.png" alt=""> <img vspace="5" hspace="5" src="proj4_04.png" alt=""> <img vspace="5" hspace="5" src="proj4_05.png" alt=""> <img vspace="5" hspace="5" src="proj4_06.png" alt=""> <img vspace="5" hspace="5" src="proj4_07.png" alt=""> <h2 id="5">q1d</h2><p>calculating cost of best decision boundary using cost metric from q1c</p><pre class="codeinput"><span class="comment">% use same sigma as in part a</span>
+X = sigma*randn(N, 1);
+Y = X + A;
+
+<span class="comment">% iterate over values of the prior probability</span>
+p0s = linspace(0, 1, 1e2);
+costs = zeros(length(p0s), 1);
+
+<span class="keyword">for</span> i=1:length(p0s)
+    <span class="comment">% find best decision boundary</span>
+    q1c_boundary = (2*sigma^2*log(p0s(i)/(10*(1-p0s(i)))) + a^2)/(2*a);
+    A_hat = Y &gt; q1c_boundary;
+
+    <span class="comment">% get cost</span>
+    costs(i) = 10 * mean((A_hat == 0) &amp; (A == a)) <span class="keyword">...</span><span class="comment">   % false negative</span>
+        + mean((A_hat == a) &amp; (A == 0));                <span class="comment">% false positive</span>
+<span class="keyword">end</span>
+
+figure();
+plot(p0s, costs);
+ylabel(<span class="string">'Mean cost'</span>);
+xlabel(<span class="string">'$$P_0$$ (prior probability of target not present)'</span>);
+title(<span class="string">'Cost vs. prior probability of target not present'</span>);
+</pre><img vspace="5" hspace="5" src="proj4_08.png" alt=""> <h2 id="6">q1e</h2><p>similar to part a, but now we have two distributions with the same mean but different variances (a.o.t. same variance, different means);</p><pre class="codeinput">A = a * ones(N, 1); <span class="comment">% use same mean a as before, now for both distributions</span>
+sigmaz = [3 5];     <span class="comment">% stdev for first distribution (target not present)</span>
+sigmax = [1/5 1/2]; <span class="comment">% stdev for second distribution (target present)</span>
+
+Z = sigmaz(1) * randn(N, 1);    <span class="comment">% H0 distribution (target not present)</span>
+X = sigmax(1) * randn(N, 1);    <span class="comment">% H1 distribution (target present)</span>
+dst = rand(N, 1) &lt; p0;          <span class="comment">% randomly select from X, Z</span>
+Y = A + Z.*dst + X.*~dst;
+
+<span class="comment">% now that we have two gaussians with the same mean, the decision rule</span>
+    <span class="comment">% is |x-mu| &lt;&gt; eta</span>
+dec_boundary = 2*sigmaz(1)^2*sigmax(1)^2/(sigmax(1)^2-sigmaz(1)^2) <span class="keyword">...</span>
+        *log(sigmax(1)*p0/(sigmaz(1)*(1-p0)));
+
+emp_accuracy = mean(((Y - a).^2 &gt; dec_boundary) == dst)
+
+<span class="comment">% too lazy to calculate theoretical accuracy, just look at next plot</span>
+<span class="comment">% and see if the decision boundary is correct as a sanity check</span>
+</pre><pre class="codeoutput">
+emp_accuracy =
+
+    0.9082
+
+</pre><h2 id="7">(still q1e) sanity check: plot eta vs. accuracy</h2><p>(to demonstrate that this is actually the best error)</p><pre class="codeinput">etas = linspace(-5, 5, 1e3);
+accuracies = zeros(length(etas), 1);
+<span class="keyword">for</span> i=1:length(etas)
+    accuracies(i) = mean(((Y - a).^2 &gt; etas(i)) == dst);
+<span class="keyword">end</span>
+
+figure();
+hold(<span class="string">'on'</span>);
+plot(etas, accuracies);
+xline(dec_boundary);
+yline(emp_accuracy, <span class="string">'r'</span>);
+hold(<span class="string">'off'</span>);
+ylabel(<span class="string">'Accuracy'</span>);
+xlabel(<span class="string">'$$\eta$$'</span>);
+ylim([0 1]);
+title(<span class="string">'Accuracy vs. decision boundary'</span>);
+legend([<span class="string">"Empirical accuracy"</span>, <span class="string">"Theoretical optimal boundary"</span>, <span class="keyword">...</span>
+    <span class="string">"Optimal accuracy"</span>], <span class="string">'Location'</span>, <span class="string">'southeast'</span>);
+</pre><img vspace="5" hspace="5" src="proj4_09.png" alt=""> <h2 id="8">(still q1e) plotting ROCs</h2><p>same as q1b, but with the same setup from q1e</p><pre class="codeinput">etas = linspace(-10, 10, 1e3);
+sigmas = logspace(-1, 1, 5);
+P_F = zeros(length(etas), 1);
+P_D = zeros(length(etas), 1);
+
+<span class="comment">% iterate over decision boundary</span>
+<span class="comment">% and iterate over several SNRs</span>
+<span class="keyword">for</span> j=1:length(sigmaz)
+<span class="keyword">for</span> k=1:length(sigmax)
+    Z = sigmaz(j) * randn(N, 1);    <span class="comment">% H0 distribution (target not present)</span>
+    X = sigmax(k) * randn(N, 1);    <span class="comment">% H1 distribution (target present)</span>
+    dst = rand(N, 1) &lt; p0;          <span class="comment">% randomly select from X, Z</span>
+    Y = A + Z.*dst + X.*~dst;
+
+    <span class="comment">% MAP rule: minimizing probability of error</span>
+    map_boundary = 2*sigmaz(j)^2*sigmax(k)^2/(sigmax(k)^2-sigmaz(j)^2) <span class="keyword">...</span>
+        *log(sigmax(k)*p0/(sigmaz(j)*(1-p0)));
+
+    <span class="comment">% find closest points to optimal decision boundary</span>
+    [~, map_i] = min(abs(etas-map_boundary));
+
+    <span class="keyword">for</span> i=1:length(etas)
+        A_hat = (Y - a).^2 &gt; etas(i);
+
+        P_D(i) = sum((A_hat == 1) &amp; (dst == 1)) / sum(dst == 1);
+        P_F(i) = sum((A_hat == 1) &amp; (dst == 0)) / sum(dst == 0);
+    <span class="keyword">end</span>
+
+    figure();
+    hold(<span class="string">'on'</span>);
+    plot(P_F, P_D);
+    plot(P_F(map_i), P_D(map_i), <span class="string">'g*'</span>);
+    hold(<span class="string">'off'</span>);
+    ylabel(<span class="string">'$$P_D$$'</span>);
+    xlabel(<span class="string">'$$P_F$$'</span>);
+    title(sprintf([<span class="string">'Receiver Operating Characteristic $$\\sigma_x=%f$$'</span> <span class="keyword">...</span>
+        <span class="string">', $$\\sigma_z=%f$$'</span>], sigmaz(j), sigmax(k)));
+    legend([<span class="string">"ROC"</span>, sprintf(<span class="string">'MAP boundary (\\eta=%f)'</span>, map_boundary)], <span class="keyword">...</span>
+        <span class="string">'Location'</span>, <span class="string">'southeast'</span>);
+<span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="proj4_10.png" alt=""> <img vspace="5" hspace="5" src="proj4_11.png" alt=""> <img vspace="5" hspace="5" src="proj4_12.png" alt=""> <img vspace="5" hspace="5" src="proj4_13.png" alt=""> <h2 id="9">q2: MAP estimate on fisheriris</h2><p>using a multivariate gaussian estimator</p><pre class="codeinput">clc; clear; close <span class="string">all</span>;
+load(<span class="string">'Iris'</span>);
+
+N = size(features, 1);          <span class="comment">% numbere of samples</span>
+C = length(unique(labels));     <span class="comment">% number of classes</span>
+K = size(features, 2);          <span class="comment">% number of features</span>
+
+<span class="comment">% split into train/test sets</span>
+<span class="comment">% train-test split 50/50</span>
+is_train        = rand(N, 1) &lt; 0.5;
+train_features  = features(is_train, :);
+train_labels    = labels(is_train, :);
+test_features   = features(is_train == 0, :);
+test_labels     = labels(is_train == 0, :);
+
+<span class="comment">% store results of evaluating model on test dataset</span>
+results = zeros(length(test_labels), C);
+
+<span class="comment">% calculate class priors (on train dataset)</span>
+priors = histcounts(test_labels) / length(test_labels);
+
+<span class="keyword">for</span> i=1:C
+    indices = train_labels == i;
+    class_features = train_features(indices, :);
+
+    <span class="comment">% "train": find MAP parameters (class-conditional density)</span>
+    mus = mean(class_features);
+    covs = cov(class_features);
+
+    <span class="comment">% evaluate on test set</span>
+    results(:,i) = mvnpdf(test_features, mus, covs) * priors(i);
+<span class="keyword">end</span>
+
+<span class="comment">% disregard actual maximum value, just get decision (est)</span>
+[~, est] = max(results, [], 2);
+accuracy = mean(est == test_labels)
+
+confusionchart(est, test_labels);
+title(<span class="string">'Iris classification confusion matrix'</span>);
+</pre><pre class="codeoutput">
+accuracy =
+
+    0.9722
+
+</pre><img vspace="5" hspace="5" src="proj4_14.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%%% ECE302 Project 4
+% Steven Lee & Jonathan Lam
+% 
+% This project requires the Communications toolkit (for qfunc)
+% and the Probability and Statistics toolkit (for mvnpdf)
+%
+% Scratch work performed on desmos:
+% https://www.desmos.com/calculator/lchs3gr6oy
+%
+% MATLAB published version:
+% http://files.lambdalambda.ninja/reports/20-21_spring/ece302_proj4.lam_lee.html
+
+set(0,'defaultTextInterpreter','latex');
+clc; clear; close all;
+
+%% q1a
+% perform MAP estimation on a random signal plus equivariance gaussian
+% noise, and compare accuracy to theoretical accuracy
+
+N = 1e4;        % sample size
+p0 = 0.8;       % prior probability of no-target
+sigma = 0.5;    % stdev
+a = 1;          % constant value for A
+
+% A is the source signal, X is the gaussian additive noise
+A = a*(rand(N,1) > 0.8);
+X = sigma*randn(N, 1);
+Y = X + A;
+
+% MAP decision boundary: optimal (lowest) probability of error
+% to derive: f(eta|H0)*P0 = f(eta|H1)*P1, solve for eta (decision boundary)
+dec_boundary = (2*sigma^2*log(p0/(1-p0)) + a^2)/(2*a);
+
+emp_accuracy = mean((Y > dec_boundary) == A)
+theo_accuracy = p0*qfunc(-dec_boundary/sigma) ...
+    + (1-p0)*qfunc((dec_boundary-a)/sigma)
+
+%% (still q1a) sanity check: plot eta vs. accuracy
+% (to demonstrate that this is actually the best error)
+
+etas = linspace(-5, 5, 1e3);
+accuracies = zeros(length(etas), 1);
+for i=1:length(etas)
+    accuracies(i) = mean((Y > etas(i)) == A);
+end
+
+figure();
+hold('on');
+plot(etas, accuracies);
+xline(dec_boundary);
+yline(theo_accuracy, 'r');
+plot(etas, normpdf(etas, 0, sigma)*p0, 'k:');
+plot(etas, normpdf(etas, a, sigma)*(1-p0), 'k:');
+hold('off');
+ylabel('Accuracy');
+xlabel('$$\eta$$');
+ylim([0 1]);
+title('Accuracy vs. decision boundary');
+legend(["Empirical accuracy", "Theoretical optimal boundary", ...
+    "Theoretical optimal accuracy", "MAP probabilities"], ...
+    'Location', 'northwest');
+
+%% q1b&c
+% plotting receiver-operator characteristic at various SNR levels
+% (SNR never explicitly calculated, just mess with sigma); also indicate
+% where the MAP boundary occurs and where the boundary that optimizes
+% the cost metric in q1c occurs on the ROC
+
+etas = linspace(-10, 10, 1e3);
+sigmas = logspace(-1, 1, 5);
+P_F = zeros(length(etas), 1);
+P_D = zeros(length(etas), 1);
+
+% iterate over decision boundary
+% and iterate over several SNRs
+for j=1:length(sigmas)
+    X = sigmas(j)*randn(N, 1);
+    Y = X + A;
+
+    % MAP rule: minimizing probability of error
+    map_boundary = (2*sigmas(j)^2*log(p0/(1-p0)) + a^2)/(2*a);
+
+    % q1c
+    % 8.8 in detection theory pdf
+    % (C01 - C11)*P1*f(y|H1) = (C10 - C00)*P0*f(y|H0)
+    % Now set C11=C00=0 (as before), but set C01=10*C10 (a.o.t. C01=C10)
+    %
+    % basically changes the coefficients from (P1,P0) to (10*P1, P0)
+    % see new factor of 10
+    q1c_boundary = (2*sigmas(j)^2*log(p0/(10*(1-p0))) + a^2)/(2*a);
+
+    % find closest points to optimal decision boundaries
+    [~, q1c_i] = min(abs(etas-map_boundary));
+    [~, map_i] = min(abs(etas-q1c_boundary));
+    
+    for i=1:length(etas)
+        A_hat = Y > etas(i);
+
+        P_D(i) = sum((A_hat == 1) & (A == a)) / sum(A == a);
+        P_F(i) = sum((A_hat == 1) & (A == 0)) / sum(A == 0);
+    end
+
+    figure();
+    hold('on');
+    plot(P_F, P_D);
+    plot(P_F(map_i), P_D(map_i), 'g*');
+    plot(P_F(q1c_i), P_D(q1c_i), 'r*');
+    hold('off');
+    ylabel('$$P_D$$');
+    xlabel('$$P_F$$');
+    title(sprintf('Receiver Operating Characteristic $$\\sigma=%f$$', ...
+        sigmas(j)));
+    legend(["ROC", sprintf('MAP boundary (\\eta=%f)', map_boundary), ...
+        sprintf('Q1c modified cost boundary (\\eta=%f)', q1c_boundary)],...
+        'Location', 'southeast');
+end
+
+%% q1d
+% calculating cost of best decision boundary using cost metric from q1c
+
+% use same sigma as in part a
+X = sigma*randn(N, 1);
+Y = X + A;
+
+% iterate over values of the prior probability
+p0s = linspace(0, 1, 1e2);
+costs = zeros(length(p0s), 1);
+
+for i=1:length(p0s)
+    % find best decision boundary
+    q1c_boundary = (2*sigma^2*log(p0s(i)/(10*(1-p0s(i)))) + a^2)/(2*a);
+    A_hat = Y > q1c_boundary;
+
+    % get cost
+    costs(i) = 10 * mean((A_hat == 0) & (A == a)) ...   % false negative
+        + mean((A_hat == a) & (A == 0));                % false positive
+end
+
+figure();
+plot(p0s, costs);
+ylabel('Mean cost');
+xlabel('$$P_0$$ (prior probability of target not present)');
+title('Cost vs. prior probability of target not present');
+
+%% q1e
+% similar to part a, but now we have two distributions with the same
+% mean but different variances (a.o.t. same variance, different means);
+
+A = a * ones(N, 1); % use same mean a as before, now for both distributions
+sigmaz = [3 5];     % stdev for first distribution (target not present)
+sigmax = [1/5 1/2]; % stdev for second distribution (target present)
+
+Z = sigmaz(1) * randn(N, 1);    % H0 distribution (target not present)
+X = sigmax(1) * randn(N, 1);    % H1 distribution (target present)
+dst = rand(N, 1) < p0;          % randomly select from X, Z
+Y = A + Z.*dst + X.*~dst;
+
+% now that we have two gaussians with the same mean, the decision rule
+    % is |x-mu| <> eta
+dec_boundary = 2*sigmaz(1)^2*sigmax(1)^2/(sigmax(1)^2-sigmaz(1)^2) ...
+        *log(sigmax(1)*p0/(sigmaz(1)*(1-p0)));
+    
+emp_accuracy = mean(((Y - a).^2 > dec_boundary) == dst)
+
+% too lazy to calculate theoretical accuracy, just look at next plot
+% and see if the decision boundary is correct as a sanity check
+
+%% (still q1e) sanity check: plot eta vs. accuracy
+% (to demonstrate that this is actually the best error)
+
+etas = linspace(-5, 5, 1e3);
+accuracies = zeros(length(etas), 1);
+for i=1:length(etas)
+    accuracies(i) = mean(((Y - a).^2 > etas(i)) == dst);
+end
+
+figure();
+hold('on');
+plot(etas, accuracies);
+xline(dec_boundary);
+yline(emp_accuracy, 'r');
+hold('off');
+ylabel('Accuracy');
+xlabel('$$\eta$$');
+ylim([0 1]);
+title('Accuracy vs. decision boundary');
+legend(["Empirical accuracy", "Theoretical optimal boundary", ...
+    "Optimal accuracy"], 'Location', 'southeast');
+
+%% (still q1e) plotting ROCs
+% same as q1b, but with the same setup from q1e
+etas = linspace(-10, 10, 1e3);
+sigmas = logspace(-1, 1, 5);
+P_F = zeros(length(etas), 1);
+P_D = zeros(length(etas), 1);
+
+% iterate over decision boundary
+% and iterate over several SNRs
+for j=1:length(sigmaz)
+for k=1:length(sigmax)
+    Z = sigmaz(j) * randn(N, 1);    % H0 distribution (target not present)
+    X = sigmax(k) * randn(N, 1);    % H1 distribution (target present)
+    dst = rand(N, 1) < p0;          % randomly select from X, Z
+    Y = A + Z.*dst + X.*~dst;
+
+    % MAP rule: minimizing probability of error
+    map_boundary = 2*sigmaz(j)^2*sigmax(k)^2/(sigmax(k)^2-sigmaz(j)^2) ...
+        *log(sigmax(k)*p0/(sigmaz(j)*(1-p0)));
+    
+    % find closest points to optimal decision boundary
+    [~, map_i] = min(abs(etas-map_boundary));
+
+    for i=1:length(etas)
+        A_hat = (Y - a).^2 > etas(i);
+
+        P_D(i) = sum((A_hat == 1) & (dst == 1)) / sum(dst == 1);
+        P_F(i) = sum((A_hat == 1) & (dst == 0)) / sum(dst == 0);
+    end
+
+    figure();
+    hold('on');
+    plot(P_F, P_D);
+    plot(P_F(map_i), P_D(map_i), 'g*');
+    hold('off');
+    ylabel('$$P_D$$');
+    xlabel('$$P_F$$');
+    title(sprintf(['Receiver Operating Characteristic $$\\sigma_x=%f$$' ...
+        ', $$\\sigma_z=%f$$'], sigmaz(j), sigmax(k)));
+    legend(["ROC", sprintf('MAP boundary (\\eta=%f)', map_boundary)], ...
+        'Location', 'southeast');
+end
+end
+
+%% q2: MAP estimate on fisheriris
+% using a multivariate gaussian estimator
+clc; clear; close all;
+load('Iris');
+
+N = size(features, 1);          % numbere of samples
+C = length(unique(labels));     % number of classes
+K = size(features, 2);          % number of features
+
+% split into train/test sets
+% train-test split 50/50
+is_train        = rand(N, 1) < 0.5;
+train_features  = features(is_train, :);
+train_labels    = labels(is_train, :);
+test_features   = features(is_train == 0, :);
+test_labels     = labels(is_train == 0, :);
+
+% store results of evaluating model on test dataset
+results = zeros(length(test_labels), C);
+
+% calculate class priors (on train dataset)
+priors = histcounts(test_labels) / length(test_labels);
+
+for i=1:C
+    indices = train_labels == i;
+    class_features = train_features(indices, :);
+    
+    % "train": find MAP parameters (class-conditional density)
+    mus = mean(class_features);
+    covs = cov(class_features);
+    
+    % evaluate on test set
+    results(:,i) = mvnpdf(test_features, mus, covs) * priors(i);
+end
+
+% disregard actual maximum value, just get decision (est)
+[~, est] = max(results, [], 2);
+accuracy = mean(est == test_labels)
+
+confusionchart(est, test_labels);
+title('Iris classification confusion matrix');
+##### SOURCE END #####
+--></body></html>

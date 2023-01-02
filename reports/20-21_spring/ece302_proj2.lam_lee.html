@@ -1,0 +1,1377 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<base href="/assets/ece302/">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>proj2</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-04-13"><meta name="DC.source" content="proj2.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">ECE302 Proj 2</a></li><li><a href="#2">1a</a></li><li><a href="#3">1b</a></li><li><a href="#4">2</a></li></ul></div><h2 id="1">ECE302 Proj 2</h2><p>(L)MMSE estimators; Jonathan Lam &amp; Steven Lee</p><pre class="codeinput">clc; clear; close <span class="string">all</span>;
+set(0, <span class="string">'defaultTextInterpreter'</span>, <span class="string">'latex'</span>);
+</pre><h2 id="2">1a</h2><pre class="codeinput">N = 1e6;
+
+Y = 2*rand(N, 1) - 1;
+W = 4*rand(N, 1) - 2;
+
+X = Y + W;
+
+<span class="comment">% piecewise estimators</span>
+X1 = X &lt; -1;
+X2 = (X &gt;= -1) &amp; (X &lt;= 1);
+X3 = X &gt; 1;
+Y1 = (1 + X(X1)) / 2;
+Y2 = zeros(size(X(X2)));
+Y3 = (-1 + X(X3)) / 2;
+
+X = [X(X1); X(X2); X(X3)];
+Y = [Y(X1); Y(X2); Y(X3)];
+Y_est = [Y1; Y2; Y3];
+Y_err = (Y - Y_est).^2;
+
+<span class="comment">% for plotting empirical piecewise MSE as a function of X</span>
+Y_X_err = sortrows([X Y_err]);
+Y_X_err(:,2) = movmean(Y_X_err(:,2), N/1e2);
+
+figure(<span class="string">'Position'</span>, [0 0 1000 1000]);
+tiledlayout(1, 1, <span class="string">'TileSpacing'</span>, <span class="string">'tight'</span>);
+hold <span class="string">on</span>;
+
+<span class="comment">% plot all X vs error data</span>
+scatter(X, Y_err);
+
+<span class="comment">% plot piecewise MSE</span>
+x = -3:1e-2:-1;
+plot(x, (3+x).^2/12, <span class="string">'k'</span>);
+x = -1:1e-2:1;
+plot(x, 1/3*ones(size(x)), <span class="string">'k'</span>, <span class="string">'HandleVisibility'</span>, <span class="string">'off'</span>);
+x = 1:1e-2:3;
+plot(x, (3-x).^2/12, <span class="string">'k'</span>, <span class="string">'HandleVisibility'</span>, <span class="string">'off'</span>);
+
+<span class="comment">% plot empirical piecewise MSE</span>
+plot(Y_X_err(:,1), Y_X_err(:,2), <span class="string">'r'</span>);
+
+legend({<span class="string">'Squared Error'</span>, <span class="string">'Theoretical MSE'</span>, <span class="string">'Empirical MSE (moving average)'</span>});
+xlabel(<span class="string">'Observed $$X$$'</span>);
+ylabel(<span class="string">'$$(\hat{Y}(X)-Y)^2$$'</span>);
+title(<span class="string">'Error in estimate vs. observed $$X$$'</span>);
+
+<span class="comment">% calculate empirical MSE</span>
+MSE_emp = mean(Y_err);
+</pre><img vspace="5" hspace="5" src="proj2_01.png" alt=""> <h2 id="3">1b</h2><pre class="codeinput">Y_lin = X/5;
+LMSE_emp = mean((Y_lin - Y).^2);
+
+<span class="comment">%table making</span>
+display(table([1/4; 4/15], [MSE_emp; LMSE_emp], <span class="keyword">...</span>
+	<span class="string">'VariableNames'</span>, {<span class="string">'Theoretical'</span>, <span class="string">'Empirical'</span>}, <span class="keyword">...</span>
+	<span class="string">'RowNames'</span>, {<span class="string">'MMSE'</span>, <span class="string">'LMMSE'</span>}))
+</pre><pre class="codeoutput">  2&times;2 table
+
+             Theoretical    Empirical
+             ___________    _________
+
+    MMSE          0.25       0.25009 
+    LMMSE      0.26667       0.26671 
+
+</pre><h2 id="4">2</h2><pre class="codeinput">clear;
+N = 1e4;
+mu_y = 1;
+sig_ys = 1:10;
+sig_rs = 1:10;
+Rs = 1:10;		<span class="comment">% R is the number of observations</span>
+
+<span class="comment">% calculate all da results</span>
+res = [];
+row_labels = {};
+i = 1;
+<span class="keyword">for</span> sig_y_ind = 1:length(sig_ys)
+<span class="keyword">for</span> sig_r_ind = 1:length(sig_rs)
+<span class="keyword">for</span> R_ind = 1:length(Rs)
+	sig_y = sig_ys(sig_y_ind);
+	sig_r = sig_rs(sig_r_ind);
+	R = Rs(R_ind);
+	[emp, theo] = calc_llmse(mu_y, sig_y, sig_r, N, R);
+	res(R_ind, sig_r_ind, sig_y_ind, :) = [emp, theo];
+	row_labels{i} = sprintf(<span class="string">'sig_y=%.2f, sig_r=%.2f, R=%d'</span>, sig_y, sig_r, R);
+	i = i + 1;
+<span class="keyword">end</span>
+<span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">% plotting slices of the result vector</span>
+figure(<span class="string">'Position'</span>, [0 0 1200 400]);
+tiledlayout(1, 3, <span class="string">'TileSpacing'</span>, <span class="string">'tight'</span>);
+<span class="comment">% plot MSE vs R</span>
+nexttile();
+mvr = reshape(res(:, 5, 5, :), [], 2);
+plot(Rs, mvr(:,1), Rs, mvr(:,2));
+xlabel(<span class="string">'Number of observations'</span>);
+ylabel(<span class="string">'LMMSE'</span>);
+title(<span class="string">'LMMSE vs. Number of observations ($$\sigma_y=\sigma_r=5$$)'</span>);
+legend({<span class="string">'Empirical LMMSE'</span>, <span class="string">'Theoretical LMMSE'</span>});
+<span class="comment">% plot MSE vs sig_y</span>
+nexttile();
+mvsy = reshape(res(5, :, 5, :), [], 2);
+plot(sig_ys, mvsy(:,1), sig_ys, mvsy(:,2));
+xlabel(<span class="string">'$$\sigma_y$$'</span>);
+ylabel(<span class="string">'LMMSE'</span>);
+title(<span class="string">'LMMSE vs. $$\sigma_y$$ ($$R=\sigma_r=5$$)'</span>);
+legend({<span class="string">'Empirical LMMSE'</span>, <span class="string">'Theoretical LMMSE'</span>});
+<span class="comment">% plot MSE vs sig_r</span>
+nexttile();
+mvsr = reshape(res(5, 5, :, :), [], 2);
+plot(sig_rs, mvsr(:,1), sig_rs, mvsr(:,2));
+xlabel(<span class="string">'$$\sigma_r$$'</span>);
+ylabel(<span class="string">'LMMSE'</span>);
+title(<span class="string">'LMMSE vs. $$\sigma_r$$ ($$R=\sigma_y=5$$)'</span>);
+legend({<span class="string">'Empirical LMMSE'</span>, <span class="string">'Theoretical LMMSE'</span>});
+
+<span class="comment">% displaying results in a table</span>
+res = reshape(res, [], 2);
+display(table(res(:,1), res(:,2), <span class="keyword">...</span>
+	<span class="string">'VariableNames'</span>, {<span class="string">'Empirical'</span>, <span class="string">'Theoretical'</span>}, <span class="string">'RowNames'</span>, row_labels))
+
+<span class="comment">% function to help with calculations at different values of the parameters</span>
+<span class="keyword">function</span> [emp, theo] = calc_llmse(mu_y, sig_y, sig_r, N, R)
+	Y_gaus = mu_y + sig_y * randn(N, 1);
+	R_gaus = sig_r * randn(N, R);
+	X = Y_gaus + R_gaus;
+
+	<span class="comment">% solve normal equation C_XX*a=C_XY (8.70)</span>
+	C_XX = sig_y^2 * ones(R) + sig_r^2 * eye(R);
+	C_XY = sig_y^2 * ones(R, 1);
+<span class="comment">% 	a = C_XX^-1 * C_XY;</span>
+    a = C_XX \ C_XY;
+
+	<span class="comment">% 8.74: comes from requirement that Yhat_lin is unbiased</span>
+	<span class="comment">% (same as 8.60 assuming that mu_x=mu_y since mu_r=0)</span>
+	a0 = mu_y * (1 - sum(a));
+
+	Y_gaus_est = a0 + sum(a.' .* X, 2);
+
+	<span class="comment">% empirical MSE</span>
+	emp = mean((Y_gaus_est - Y_gaus).^2);
+
+	<span class="comment">% 8.73: theoretical associated MSE</span>
+	theo = sig_y^2 - C_XY.' * C_XX^-1 * C_XY;
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">  1000&times;2 table
+
+                                      Empirical    Theoretical
+                                      _________    ___________
+
+    sig_y=1.00, sig_r=1.00, R=1        0.48593           0.5  
+    sig_y=1.00, sig_r=1.00, R=2        0.33171       0.33333  
+    sig_y=1.00, sig_r=1.00, R=3        0.25523          0.25  
+    sig_y=1.00, sig_r=1.00, R=4         0.2005           0.2  
+    sig_y=1.00, sig_r=1.00, R=5        0.16809       0.16667  
+    sig_y=1.00, sig_r=1.00, R=6        0.13969       0.14286  
+    sig_y=1.00, sig_r=1.00, R=7        0.12566         0.125  
+    sig_y=1.00, sig_r=1.00, R=8        0.11079       0.11111  
+    sig_y=1.00, sig_r=1.00, R=9       0.099602           0.1  
+    sig_y=1.00, sig_r=1.00, R=10      0.091576      0.090909  
+    sig_y=1.00, sig_r=2.00, R=1        0.81523           0.8  
+    sig_y=1.00, sig_r=2.00, R=2        0.69423       0.66667  
+    sig_y=1.00, sig_r=2.00, R=3        0.58042       0.57143  
+    sig_y=1.00, sig_r=2.00, R=4        0.49358           0.5  
+    sig_y=1.00, sig_r=2.00, R=5        0.44054       0.44444  
+    sig_y=1.00, sig_r=2.00, R=6         0.4023           0.4  
+    sig_y=1.00, sig_r=2.00, R=7        0.36181       0.36364  
+    sig_y=1.00, sig_r=2.00, R=8         0.3284       0.33333  
+    sig_y=1.00, sig_r=2.00, R=9        0.31916       0.30769  
+    sig_y=1.00, sig_r=2.00, R=10       0.29055       0.28571  
+    sig_y=1.00, sig_r=3.00, R=1        0.91351           0.9  
+    sig_y=1.00, sig_r=3.00, R=2        0.80267       0.81818  
+    sig_y=1.00, sig_r=3.00, R=3        0.75109          0.75  
+    sig_y=1.00, sig_r=3.00, R=4        0.69054       0.69231  
+    sig_y=1.00, sig_r=3.00, R=5        0.63791       0.64286  
+    sig_y=1.00, sig_r=3.00, R=6        0.59261           0.6  
+    sig_y=1.00, sig_r=3.00, R=7        0.57014        0.5625  
+    sig_y=1.00, sig_r=3.00, R=8        0.51544       0.52941  
+    sig_y=1.00, sig_r=3.00, R=9        0.51162           0.5  
+    sig_y=1.00, sig_r=3.00, R=10       0.46871       0.47368  
+    sig_y=1.00, sig_r=4.00, R=1        0.95018       0.94118  
+    sig_y=1.00, sig_r=4.00, R=2        0.87913       0.88889  
+    sig_y=1.00, sig_r=4.00, R=3        0.83335       0.84211  
+    sig_y=1.00, sig_r=4.00, R=4        0.78117           0.8  
+    sig_y=1.00, sig_r=4.00, R=5        0.76487        0.7619  
+    sig_y=1.00, sig_r=4.00, R=6        0.74509       0.72727  
+    sig_y=1.00, sig_r=4.00, R=7        0.70936       0.69565  
+    sig_y=1.00, sig_r=4.00, R=8        0.65845       0.66667  
+    sig_y=1.00, sig_r=4.00, R=9        0.64758          0.64  
+    sig_y=1.00, sig_r=4.00, R=10       0.60218       0.61538  
+    sig_y=1.00, sig_r=5.00, R=1        0.94791       0.96154  
+    sig_y=1.00, sig_r=5.00, R=2        0.93227       0.92593  
+    sig_y=1.00, sig_r=5.00, R=3        0.90057       0.89286  
+    sig_y=1.00, sig_r=5.00, R=4        0.85109       0.86207  
+    sig_y=1.00, sig_r=5.00, R=5        0.85569       0.83333  
+    sig_y=1.00, sig_r=5.00, R=6         0.8085       0.80645  
+    sig_y=1.00, sig_r=5.00, R=7        0.79466       0.78125  
+    sig_y=1.00, sig_r=5.00, R=8        0.75931       0.75758  
+    sig_y=1.00, sig_r=5.00, R=9        0.72894       0.73529  
+    sig_y=1.00, sig_r=5.00, R=10       0.71161       0.71429  
+    sig_y=1.00, sig_r=6.00, R=1        0.96183       0.97297  
+    sig_y=1.00, sig_r=6.00, R=2        0.94688       0.94737  
+    sig_y=1.00, sig_r=6.00, R=3        0.94075       0.92308  
+    sig_y=1.00, sig_r=6.00, R=4        0.91126           0.9  
+    sig_y=1.00, sig_r=6.00, R=5        0.88721       0.87805  
+    sig_y=1.00, sig_r=6.00, R=6        0.85911       0.85714  
+    sig_y=1.00, sig_r=6.00, R=7        0.80692       0.83721  
+    sig_y=1.00, sig_r=6.00, R=8        0.82591       0.81818  
+    sig_y=1.00, sig_r=6.00, R=9        0.80321           0.8  
+    sig_y=1.00, sig_r=6.00, R=10       0.77153       0.78261  
+    sig_y=1.00, sig_r=7.00, R=1        0.98024          0.98  
+    sig_y=1.00, sig_r=7.00, R=2         0.9614       0.96078  
+    sig_y=1.00, sig_r=7.00, R=3        0.91901       0.94231  
+    sig_y=1.00, sig_r=7.00, R=4        0.92331       0.92453  
+    sig_y=1.00, sig_r=7.00, R=5         0.9264       0.90741  
+    sig_y=1.00, sig_r=7.00, R=6        0.90964       0.89091  
+    sig_y=1.00, sig_r=7.00, R=7        0.87934         0.875  
+    sig_y=1.00, sig_r=7.00, R=8        0.87226       0.85965  
+    sig_y=1.00, sig_r=7.00, R=9        0.84636       0.84483  
+    sig_y=1.00, sig_r=7.00, R=10       0.84167       0.83051  
+    sig_y=1.00, sig_r=8.00, R=1        0.97278       0.98462  
+    sig_y=1.00, sig_r=8.00, R=2        0.98448        0.9697  
+    sig_y=1.00, sig_r=8.00, R=3        0.96167       0.95522  
+    sig_y=1.00, sig_r=8.00, R=4        0.94835       0.94118  
+    sig_y=1.00, sig_r=8.00, R=5         0.9365       0.92754  
+    sig_y=1.00, sig_r=8.00, R=6        0.93711       0.91429  
+    sig_y=1.00, sig_r=8.00, R=7        0.92012       0.90141  
+    sig_y=1.00, sig_r=8.00, R=8        0.90403       0.88889  
+    sig_y=1.00, sig_r=8.00, R=9         0.8796       0.87671  
+    sig_y=1.00, sig_r=8.00, R=10       0.85527       0.86486  
+    sig_y=1.00, sig_r=9.00, R=1        0.97206        0.9878  
+    sig_y=1.00, sig_r=9.00, R=2        0.98009        0.9759  
+    sig_y=1.00, sig_r=9.00, R=3        0.94797       0.96429  
+    sig_y=1.00, sig_r=9.00, R=4        0.94061       0.95294  
+    sig_y=1.00, sig_r=9.00, R=5        0.94618       0.94186  
+    sig_y=1.00, sig_r=9.00, R=6         0.9442       0.93103  
+    sig_y=1.00, sig_r=9.00, R=7        0.92443       0.92045  
+    sig_y=1.00, sig_r=9.00, R=8        0.93888       0.91011  
+    sig_y=1.00, sig_r=9.00, R=9        0.89645           0.9  
+    sig_y=1.00, sig_r=9.00, R=10       0.87489       0.89011  
+    sig_y=1.00, sig_r=10.00, R=1       0.99161        0.9901  
+    sig_y=1.00, sig_r=10.00, R=2       0.97872       0.98039  
+    sig_y=1.00, sig_r=10.00, R=3       0.95183       0.97087  
+    sig_y=1.00, sig_r=10.00, R=4       0.93603       0.96154  
+    sig_y=1.00, sig_r=10.00, R=5       0.96091       0.95238  
+    sig_y=1.00, sig_r=10.00, R=6       0.92556        0.9434  
+    sig_y=1.00, sig_r=10.00, R=7       0.93012       0.93458  
+    sig_y=1.00, sig_r=10.00, R=8       0.94362       0.92593  
+    sig_y=1.00, sig_r=10.00, R=9       0.90794       0.91743  
+    sig_y=1.00, sig_r=10.00, R=10      0.91834       0.90909  
+    sig_y=2.00, sig_r=1.00, R=1        0.78689           0.8  
+    sig_y=2.00, sig_r=1.00, R=2        0.44289       0.44444  
+    sig_y=2.00, sig_r=1.00, R=3        0.30252       0.30769  
+    sig_y=2.00, sig_r=1.00, R=4        0.23028       0.23529  
+    sig_y=2.00, sig_r=1.00, R=5        0.19645       0.19048  
+    sig_y=2.00, sig_r=1.00, R=6        0.15775          0.16  
+    sig_y=2.00, sig_r=1.00, R=7        0.13447       0.13793  
+    sig_y=2.00, sig_r=1.00, R=8        0.12271       0.12121  
+    sig_y=2.00, sig_r=1.00, R=9        0.10967       0.10811  
+    sig_y=2.00, sig_r=1.00, R=10      0.097611      0.097561  
+    sig_y=2.00, sig_r=2.00, R=1         1.9561             2  
+    sig_y=2.00, sig_r=2.00, R=2         1.2914        1.3333  
+    sig_y=2.00, sig_r=2.00, R=3          1.031             1  
+    sig_y=2.00, sig_r=2.00, R=4        0.82501           0.8  
+    sig_y=2.00, sig_r=2.00, R=5        0.65806       0.66667  
+    sig_y=2.00, sig_r=2.00, R=6         0.5807       0.57143  
+    sig_y=2.00, sig_r=2.00, R=7        0.50937           0.5  
+    sig_y=2.00, sig_r=2.00, R=8        0.44116       0.44444  
+    sig_y=2.00, sig_r=2.00, R=9        0.39867           0.4  
+    sig_y=2.00, sig_r=2.00, R=10       0.36541       0.36364  
+    sig_y=2.00, sig_r=3.00, R=1         2.7897        2.7692  
+    sig_y=2.00, sig_r=3.00, R=2         2.1101        2.1176  
+    sig_y=2.00, sig_r=3.00, R=3         1.7099        1.7143  
+    sig_y=2.00, sig_r=3.00, R=4         1.4276          1.44  
+    sig_y=2.00, sig_r=3.00, R=5         1.2204        1.2414  
+    sig_y=2.00, sig_r=3.00, R=6          1.098        1.0909  
+    sig_y=2.00, sig_r=3.00, R=7        0.99303       0.97297  
+    sig_y=2.00, sig_r=3.00, R=8        0.86215       0.87805  
+    sig_y=2.00, sig_r=3.00, R=9        0.78363           0.8  
+    sig_y=2.00, sig_r=3.00, R=10       0.73301       0.73469  
+    sig_y=2.00, sig_r=4.00, R=1         3.2069           3.2  
+    sig_y=2.00, sig_r=4.00, R=2         2.6809        2.6667  
+    sig_y=2.00, sig_r=4.00, R=3         2.2388        2.2857  
+    sig_y=2.00, sig_r=4.00, R=4         2.0246             2  
+    sig_y=2.00, sig_r=4.00, R=5         1.7952        1.7778  
+    sig_y=2.00, sig_r=4.00, R=6         1.5995           1.6  
+    sig_y=2.00, sig_r=4.00, R=7         1.4579        1.4545  
+    sig_y=2.00, sig_r=4.00, R=8         1.3433        1.3333  
+    sig_y=2.00, sig_r=4.00, R=9         1.2283        1.2308  
+    sig_y=2.00, sig_r=4.00, R=10        1.1454        1.1429  
+    sig_y=2.00, sig_r=5.00, R=1         3.5167        3.4483  
+    sig_y=2.00, sig_r=5.00, R=2         3.0672        3.0303  
+    sig_y=2.00, sig_r=5.00, R=3         2.6904        2.7027  
+    sig_y=2.00, sig_r=5.00, R=4         2.4184         2.439  
+    sig_y=2.00, sig_r=5.00, R=5         2.2074        2.2222  
+    sig_y=2.00, sig_r=5.00, R=6         2.0431        2.0408  
+    sig_y=2.00, sig_r=5.00, R=7         1.8831        1.8868  
+    sig_y=2.00, sig_r=5.00, R=8         1.7517        1.7544  
+    sig_y=2.00, sig_r=5.00, R=9         1.6257        1.6393  
+    sig_y=2.00, sig_r=5.00, R=10         1.517        1.5385  
+    sig_y=2.00, sig_r=6.00, R=1         3.6187           3.6  
+    sig_y=2.00, sig_r=6.00, R=2         3.2886        3.2727  
+    sig_y=2.00, sig_r=6.00, R=3         2.9581             3  
+    sig_y=2.00, sig_r=6.00, R=4         2.7229        2.7692  
+    sig_y=2.00, sig_r=6.00, R=5         2.5811        2.5714  
+    sig_y=2.00, sig_r=6.00, R=6         2.3239           2.4  
+    sig_y=2.00, sig_r=6.00, R=7         2.2226          2.25  
+    sig_y=2.00, sig_r=6.00, R=8         2.1823        2.1176  
+    sig_y=2.00, sig_r=6.00, R=9         1.9531             2  
+    sig_y=2.00, sig_r=6.00, R=10        1.8913        1.8947  
+    sig_y=2.00, sig_r=7.00, R=1         3.7642        3.6981  
+    sig_y=2.00, sig_r=7.00, R=2         3.3546        3.4386  
+    sig_y=2.00, sig_r=7.00, R=3         3.1464        3.2131  
+    sig_y=2.00, sig_r=7.00, R=4         3.0253        3.0154  
+    sig_y=2.00, sig_r=7.00, R=5         2.8389        2.8406  
+    sig_y=2.00, sig_r=7.00, R=6         2.6085        2.6849  
+    sig_y=2.00, sig_r=7.00, R=7         2.5579        2.5455  
+    sig_y=2.00, sig_r=7.00, R=8         2.4074        2.4198  
+    sig_y=2.00, sig_r=7.00, R=9         2.2891        2.3059  
+    sig_y=2.00, sig_r=7.00, R=10        2.1829        2.2022  
+    sig_y=2.00, sig_r=8.00, R=1         3.7721        3.7647  
+    sig_y=2.00, sig_r=8.00, R=2         3.5328        3.5556  
+    sig_y=2.00, sig_r=8.00, R=3          3.325        3.3684  
+    sig_y=2.00, sig_r=8.00, R=4         3.1174           3.2  
+    sig_y=2.00, sig_r=8.00, R=5          3.088        3.0476  
+    sig_y=2.00, sig_r=8.00, R=6          2.914        2.9091  
+    sig_y=2.00, sig_r=8.00, R=7         2.8154        2.7826  
+    sig_y=2.00, sig_r=8.00, R=8          2.664        2.6667  
+    sig_y=2.00, sig_r=8.00, R=9         2.5719          2.56  
+    sig_y=2.00, sig_r=8.00, R=10        2.4857        2.4615  
+    sig_y=2.00, sig_r=9.00, R=1         3.7947        3.8118  
+    sig_y=2.00, sig_r=9.00, R=2         3.6021        3.6404  
+    sig_y=2.00, sig_r=9.00, R=3          3.435        3.4839  
+    sig_y=2.00, sig_r=9.00, R=4         3.3157        3.3402  
+    sig_y=2.00, sig_r=9.00, R=5         3.2886        3.2079  
+    sig_y=2.00, sig_r=9.00, R=6         3.1592        3.0857  
+    sig_y=2.00, sig_r=9.00, R=7         2.9002        2.9725  
+    sig_y=2.00, sig_r=9.00, R=8         2.8706        2.8673  
+    sig_y=2.00, sig_r=9.00, R=9         2.7781        2.7692  
+    sig_y=2.00, sig_r=9.00, R=10        2.6332        2.6777  
+    sig_y=2.00, sig_r=10.00, R=1          3.77        3.8462  
+    sig_y=2.00, sig_r=10.00, R=2        3.7008        3.7037  
+    sig_y=2.00, sig_r=10.00, R=3        3.5757        3.5714  
+    sig_y=2.00, sig_r=10.00, R=4        3.4412        3.4483  
+    sig_y=2.00, sig_r=10.00, R=5        3.3819        3.3333  
+    sig_y=2.00, sig_r=10.00, R=6        3.2152        3.2258  
+    sig_y=2.00, sig_r=10.00, R=7        3.0321         3.125  
+    sig_y=2.00, sig_r=10.00, R=8        3.0431        3.0303  
+    sig_y=2.00, sig_r=10.00, R=9         2.966        2.9412  
+    sig_y=2.00, sig_r=10.00, R=10        2.854        2.8571  
+    sig_y=3.00, sig_r=1.00, R=1        0.89858           0.9  
+    sig_y=3.00, sig_r=1.00, R=2        0.47077       0.47368  
+    sig_y=3.00, sig_r=1.00, R=3        0.31558       0.32143  
+    sig_y=3.00, sig_r=1.00, R=4        0.24992       0.24324  
+    sig_y=3.00, sig_r=1.00, R=5         0.1924       0.19565  
+    sig_y=3.00, sig_r=1.00, R=6        0.16203       0.16364  
+    sig_y=3.00, sig_r=1.00, R=7        0.13636       0.14063  
+    sig_y=3.00, sig_r=1.00, R=8        0.12354       0.12329  
+    sig_y=3.00, sig_r=1.00, R=9        0.11038       0.10976  
+    sig_y=3.00, sig_r=1.00, R=10       0.10177      0.098901  
+    sig_y=3.00, sig_r=2.00, R=1         2.8171        2.7692  
+    sig_y=3.00, sig_r=2.00, R=2         1.6768        1.6364  
+    sig_y=3.00, sig_r=2.00, R=3         1.2012        1.1613  
+    sig_y=3.00, sig_r=2.00, R=4        0.87519           0.9  
+    sig_y=3.00, sig_r=2.00, R=5        0.72916       0.73469  
+    sig_y=3.00, sig_r=2.00, R=6        0.63228       0.62069  
+    sig_y=3.00, sig_r=2.00, R=7        0.53231       0.53731  
+    sig_y=3.00, sig_r=2.00, R=8        0.47007       0.47368  
+    sig_y=3.00, sig_r=2.00, R=9        0.42689       0.42353  
+    sig_y=3.00, sig_r=2.00, R=10       0.38705       0.38298  
+    sig_y=3.00, sig_r=3.00, R=1         4.5116           4.5  
+    sig_y=3.00, sig_r=3.00, R=2         3.0212             3  
+    sig_y=3.00, sig_r=3.00, R=3          2.256          2.25  
+    sig_y=3.00, sig_r=3.00, R=4         1.8276           1.8  
+    sig_y=3.00, sig_r=3.00, R=5         1.4802           1.5  
+    sig_y=3.00, sig_r=3.00, R=6          1.287        1.2857  
+    sig_y=3.00, sig_r=3.00, R=7         1.1241         1.125  
+    sig_y=3.00, sig_r=3.00, R=8         1.0086             1  
+    sig_y=3.00, sig_r=3.00, R=9        0.90462           0.9  
+    sig_y=3.00, sig_r=3.00, R=10       0.81722       0.81818  
+    sig_y=3.00, sig_r=4.00, R=1         5.7034          5.76  
+    sig_y=3.00, sig_r=4.00, R=2         4.2181        4.2353  
+    sig_y=3.00, sig_r=4.00, R=3          3.425        3.3488  
+    sig_y=3.00, sig_r=4.00, R=4         2.8736        2.7692  
+    sig_y=3.00, sig_r=4.00, R=5         2.3516        2.3607  
+    sig_y=3.00, sig_r=4.00, R=6          1.998        2.0571  
+    sig_y=3.00, sig_r=4.00, R=7         1.8348        1.8228  
+    sig_y=3.00, sig_r=4.00, R=8         1.5986        1.6364  
+    sig_y=3.00, sig_r=4.00, R=9         1.5123        1.4845  
+    sig_y=3.00, sig_r=4.00, R=10        1.3647        1.3585  
+    sig_y=3.00, sig_r=5.00, R=1         6.5637        6.6176  
+    sig_y=3.00, sig_r=5.00, R=2         5.1789        5.2326  
+    sig_y=3.00, sig_r=5.00, R=3         4.2255        4.3269  
+    sig_y=3.00, sig_r=5.00, R=4         3.7486        3.6885  
+    sig_y=3.00, sig_r=5.00, R=5          3.193        3.2143  
+    sig_y=3.00, sig_r=5.00, R=6         2.8204        2.8481  
+    sig_y=3.00, sig_r=5.00, R=7         2.5836        2.5568  
+    sig_y=3.00, sig_r=5.00, R=8          2.377        2.3196  
+    sig_y=3.00, sig_r=5.00, R=9         2.0825        2.1226  
+    sig_y=3.00, sig_r=5.00, R=10        1.9689        1.9565  
+    sig_y=3.00, sig_r=6.00, R=1         7.2915           7.2  
+    sig_y=3.00, sig_r=6.00, R=2         6.0393             6  
+    sig_y=3.00, sig_r=6.00, R=3         5.1225        5.1429  
+    sig_y=3.00, sig_r=6.00, R=4         4.4771           4.5  
+    sig_y=3.00, sig_r=6.00, R=5         3.8412             4  
+    sig_y=3.00, sig_r=6.00, R=6         3.5428           3.6  
+    sig_y=3.00, sig_r=6.00, R=7         3.2281        3.2727  
+    sig_y=3.00, sig_r=6.00, R=8         2.9946             3  
+    sig_y=3.00, sig_r=6.00, R=9         2.7159        2.7692  
+    sig_y=3.00, sig_r=6.00, R=10        2.6544        2.5714  
+    sig_y=3.00, sig_r=7.00, R=1         7.6918        7.6034  
+    sig_y=3.00, sig_r=7.00, R=2         6.6382        6.5821  
+    sig_y=3.00, sig_r=7.00, R=3         5.9156        5.8026  
+    sig_y=3.00, sig_r=7.00, R=4         5.1931        5.1882  
+    sig_y=3.00, sig_r=7.00, R=5          4.683        4.6915  
+    sig_y=3.00, sig_r=7.00, R=6         4.3796        4.2816  
+    sig_y=3.00, sig_r=7.00, R=7          3.901        3.9375  
+    sig_y=3.00, sig_r=7.00, R=8         3.7174        3.6446  
+    sig_y=3.00, sig_r=7.00, R=9         3.3564        3.3923  
+    sig_y=3.00, sig_r=7.00, R=10        3.2154        3.1727  
+    sig_y=3.00, sig_r=8.00, R=1         7.8267        7.8904  
+    sig_y=3.00, sig_r=8.00, R=2         7.1479        7.0244  
+    sig_y=3.00, sig_r=8.00, R=3         6.3136        6.3297  
+    sig_y=3.00, sig_r=8.00, R=4         5.7373          5.76  
+    sig_y=3.00, sig_r=8.00, R=5         5.1921        5.2844  
+    sig_y=3.00, sig_r=8.00, R=6         4.8965        4.8814  
+    sig_y=3.00, sig_r=8.00, R=7          4.556        4.5354  
+    sig_y=3.00, sig_r=8.00, R=8         4.1305        4.2353  
+    sig_y=3.00, sig_r=8.00, R=9         3.9689        3.9724  
+    sig_y=3.00, sig_r=8.00, R=10        3.7587        3.7403  
+    sig_y=3.00, sig_r=9.00, R=1         8.2267           8.1  
+    sig_y=3.00, sig_r=9.00, R=2         7.4429        7.3636  
+    sig_y=3.00, sig_r=9.00, R=3         6.7938          6.75  
+    sig_y=3.00, sig_r=9.00, R=4         6.1852        6.2308  
+    sig_y=3.00, sig_r=9.00, R=5         5.7572        5.7857  
+    sig_y=3.00, sig_r=9.00, R=6         5.3394           5.4  
+    sig_y=3.00, sig_r=9.00, R=7         5.0315        5.0625  
+    sig_y=3.00, sig_r=9.00, R=8         4.7081        4.7647  
+    sig_y=3.00, sig_r=9.00, R=9         4.5341           4.5  
+    sig_y=3.00, sig_r=9.00, R=10        4.1416        4.2632  
+    sig_y=3.00, sig_r=10.00, R=1        8.0895        8.2569  
+    sig_y=3.00, sig_r=10.00, R=2        7.4427        7.6271  
+    sig_y=3.00, sig_r=10.00, R=3        7.1764        7.0866  
+    sig_y=3.00, sig_r=10.00, R=4        6.5226        6.6176  
+    sig_y=3.00, sig_r=10.00, R=5        6.2451        6.2069  
+    sig_y=3.00, sig_r=10.00, R=6        5.9455        5.8442  
+    sig_y=3.00, sig_r=10.00, R=7        5.4154        5.5215  
+    sig_y=3.00, sig_r=10.00, R=8        5.3208        5.2326  
+    sig_y=3.00, sig_r=10.00, R=9        5.0587        4.9724  
+    sig_y=3.00, sig_r=10.00, R=10       4.7778        4.7368  
+    sig_y=4.00, sig_r=1.00, R=1        0.95379       0.94118  
+    sig_y=4.00, sig_r=1.00, R=2        0.48416       0.48485  
+    sig_y=4.00, sig_r=1.00, R=3        0.32197       0.32653  
+    sig_y=4.00, sig_r=1.00, R=4        0.23984       0.24615  
+    sig_y=4.00, sig_r=1.00, R=5        0.19618       0.19753  
+    sig_y=4.00, sig_r=1.00, R=6        0.16776       0.16495  
+    sig_y=4.00, sig_r=1.00, R=7        0.14269       0.14159  
+    sig_y=4.00, sig_r=1.00, R=8        0.12767       0.12403  
+    sig_y=4.00, sig_r=1.00, R=9         0.1139       0.11034  
+    sig_y=4.00, sig_r=1.00, R=10      0.097325      0.099379  
+    sig_y=4.00, sig_r=2.00, R=1         3.2431           3.2  
+    sig_y=4.00, sig_r=2.00, R=2         1.8065        1.7778  
+    sig_y=4.00, sig_r=2.00, R=3         1.2204        1.2308  
+    sig_y=4.00, sig_r=2.00, R=4        0.95151       0.94118  
+    sig_y=4.00, sig_r=2.00, R=5        0.76211        0.7619  
+    sig_y=4.00, sig_r=2.00, R=6        0.63852          0.64  
+    sig_y=4.00, sig_r=2.00, R=7        0.54719       0.55172  
+    sig_y=4.00, sig_r=2.00, R=8        0.47935       0.48485  
+    sig_y=4.00, sig_r=2.00, R=9        0.43837       0.43243  
+    sig_y=4.00, sig_r=2.00, R=10       0.39018       0.39024  
+    sig_y=4.00, sig_r=3.00, R=1         5.6576          5.76  
+    sig_y=4.00, sig_r=3.00, R=2         3.6156        3.5122  
+    sig_y=4.00, sig_r=3.00, R=3         2.5288        2.5263  
+    sig_y=4.00, sig_r=3.00, R=4         1.9712        1.9726  
+    sig_y=4.00, sig_r=3.00, R=5         1.6101         1.618  
+    sig_y=4.00, sig_r=3.00, R=6         1.4008        1.3714  
+    sig_y=4.00, sig_r=3.00, R=7         1.1759        1.1901  
+    sig_y=4.00, sig_r=3.00, R=8         1.0671        1.0511  
+    sig_y=4.00, sig_r=3.00, R=9         0.9496       0.94118  
+    sig_y=4.00, sig_r=3.00, R=10       0.83835       0.85207  
+    sig_y=4.00, sig_r=4.00, R=1         8.1804             8  
+    sig_y=4.00, sig_r=4.00, R=2         5.3561        5.3333  
+    sig_y=4.00, sig_r=4.00, R=3         3.9963             4  
+    sig_y=4.00, sig_r=4.00, R=4         3.2281           3.2  
+    sig_y=4.00, sig_r=4.00, R=5         2.6621        2.6667  
+    sig_y=4.00, sig_r=4.00, R=6         2.2109        2.2857  
+    sig_y=4.00, sig_r=4.00, R=7         1.9766             2  
+    sig_y=4.00, sig_r=4.00, R=8         1.8068        1.7778  
+    sig_y=4.00, sig_r=4.00, R=9         1.5966           1.6  
+    sig_y=4.00, sig_r=4.00, R=10        1.4751        1.4545  
+    sig_y=4.00, sig_r=5.00, R=1         10.081        9.7561  
+    sig_y=4.00, sig_r=5.00, R=2         7.1108        7.0175  
+    sig_y=4.00, sig_r=5.00, R=3         5.4275        5.4795  
+    sig_y=4.00, sig_r=5.00, R=4         4.5248        4.4944  
+    sig_y=4.00, sig_r=5.00, R=5         3.9059        3.8095  
+    sig_y=4.00, sig_r=5.00, R=6          3.254        3.3058  
+    sig_y=4.00, sig_r=5.00, R=7         2.9904        2.9197  
+    sig_y=4.00, sig_r=5.00, R=8         2.5836        2.6144  
+    sig_y=4.00, sig_r=5.00, R=9         2.3639        2.3669  
+    sig_y=4.00, sig_r=5.00, R=10        2.1707        2.1622  
+    sig_y=4.00, sig_r=6.00, R=1         11.224        11.077  
+    sig_y=4.00, sig_r=6.00, R=2         8.5534        8.4706  
+    sig_y=4.00, sig_r=6.00, R=3         6.8603        6.8571  
+    sig_y=4.00, sig_r=6.00, R=4          5.925          5.76  
+    sig_y=4.00, sig_r=6.00, R=5         4.9416        4.9655  
+    sig_y=4.00, sig_r=6.00, R=6         4.3578        4.3636  
+    sig_y=4.00, sig_r=6.00, R=7         3.9294        3.8919  
+    sig_y=4.00, sig_r=6.00, R=8         3.5297        3.5122  
+    sig_y=4.00, sig_r=6.00, R=9         3.2628           3.2  
+    sig_y=4.00, sig_r=6.00, R=10        2.9462        2.9388  
+    sig_y=4.00, sig_r=7.00, R=1         12.054        12.062  
+    sig_y=4.00, sig_r=7.00, R=2         9.8227         9.679  
+    sig_y=4.00, sig_r=7.00, R=3          8.128        8.0825  
+    sig_y=4.00, sig_r=7.00, R=4         6.9482        6.9381  
+    sig_y=4.00, sig_r=7.00, R=5         5.9708        6.0775  
+    sig_y=4.00, sig_r=7.00, R=6          5.364        5.4069  
+    sig_y=4.00, sig_r=7.00, R=7         4.8815        4.8696  
+    sig_y=4.00, sig_r=7.00, R=8         4.5296        4.4294  
+    sig_y=4.00, sig_r=7.00, R=9         3.9622        4.0622  
+    sig_y=4.00, sig_r=7.00, R=10        3.8735        3.7512  
+    sig_y=4.00, sig_r=8.00, R=1         12.674          12.8  
+    sig_y=4.00, sig_r=8.00, R=2         10.755        10.667  
+    sig_y=4.00, sig_r=8.00, R=3         8.8375        9.1429  
+    sig_y=4.00, sig_r=8.00, R=4         8.0773             8  
+    sig_y=4.00, sig_r=8.00, R=5         7.1142        7.1111  
+    sig_y=4.00, sig_r=8.00, R=6         6.3732           6.4  
+    sig_y=4.00, sig_r=8.00, R=7         5.7735        5.8182  
+    sig_y=4.00, sig_r=8.00, R=8         5.3383        5.3333  
+    sig_y=4.00, sig_r=8.00, R=9         4.9808        4.9231  
+    sig_y=4.00, sig_r=8.00, R=10        4.5605        4.5714  
+    sig_y=4.00, sig_r=9.00, R=1         13.483        13.361  
+    sig_y=4.00, sig_r=9.00, R=2         11.418        11.469  
+    sig_y=4.00, sig_r=9.00, R=3          9.975        10.047  
+    sig_y=4.00, sig_r=9.00, R=4         9.0129        8.9379  
+    sig_y=4.00, sig_r=9.00, R=5         8.0805        8.0497  
+    sig_y=4.00, sig_r=9.00, R=6         7.3397         7.322  
+    sig_y=4.00, sig_r=9.00, R=7         6.7422         6.715  
+    sig_y=4.00, sig_r=9.00, R=8         6.1887         6.201  
+    sig_y=4.00, sig_r=9.00, R=9         5.7837          5.76  
+    sig_y=4.00, sig_r=9.00, R=10        5.4067        5.3776  
+    sig_y=4.00, sig_r=10.00, R=1        13.564        13.793  
+    sig_y=4.00, sig_r=10.00, R=2        11.875        12.121  
+    sig_y=4.00, sig_r=10.00, R=3        10.704        10.811  
+    sig_y=4.00, sig_r=10.00, R=4        9.9637        9.7561  
+    sig_y=4.00, sig_r=10.00, R=5        8.8188        8.8889  
+    sig_y=4.00, sig_r=10.00, R=6        8.1992        8.1633  
+    sig_y=4.00, sig_r=10.00, R=7        7.6881        7.5472  
+    sig_y=4.00, sig_r=10.00, R=8        7.0584        7.0175  
+    sig_y=4.00, sig_r=10.00, R=9        6.5205        6.5574  
+    sig_y=4.00, sig_r=10.00, R=10       6.0502        6.1538  
+    sig_y=5.00, sig_r=1.00, R=1        0.95073       0.96154  
+    sig_y=5.00, sig_r=1.00, R=2        0.49653        0.4902  
+    sig_y=5.00, sig_r=1.00, R=3        0.33156       0.32895  
+    sig_y=5.00, sig_r=1.00, R=4        0.24497       0.24752  
+    sig_y=5.00, sig_r=1.00, R=5        0.19915       0.19841  
+    sig_y=5.00, sig_r=1.00, R=6        0.16605       0.16556  
+    sig_y=5.00, sig_r=1.00, R=7        0.14015       0.14205  
+    sig_y=5.00, sig_r=1.00, R=8        0.12693       0.12438  
+    sig_y=5.00, sig_r=1.00, R=9        0.10915       0.11062  
+    sig_y=5.00, sig_r=1.00, R=10       0.09672      0.099602  
+    sig_y=5.00, sig_r=2.00, R=1         3.4942        3.4483  
+    sig_y=5.00, sig_r=2.00, R=2         1.8533        1.8519  
+    sig_y=5.00, sig_r=2.00, R=3         1.2842        1.2658  
+    sig_y=5.00, sig_r=2.00, R=4        0.96227       0.96154  
+    sig_y=5.00, sig_r=2.00, R=5        0.76757       0.77519  
+    sig_y=5.00, sig_r=2.00, R=6        0.64448       0.64935  
+    sig_y=5.00, sig_r=2.00, R=7        0.56785       0.55866  
+    sig_y=5.00, sig_r=2.00, R=8         0.4848        0.4902  
+    sig_y=5.00, sig_r=2.00, R=9        0.43913       0.43668  
+    sig_y=5.00, sig_r=2.00, R=10       0.40274        0.3937  
+    sig_y=5.00, sig_r=3.00, R=1         6.5072        6.6176  
+    sig_y=5.00, sig_r=3.00, R=2         3.7996        3.8136  
+    sig_y=5.00, sig_r=3.00, R=3          2.711        2.6786  
+    sig_y=5.00, sig_r=3.00, R=4         2.0684        2.0642  
+    sig_y=5.00, sig_r=3.00, R=5         1.6762        1.6791  
+    sig_y=5.00, sig_r=3.00, R=6         1.4273        1.4151  
+    sig_y=5.00, sig_r=3.00, R=7         1.2112        1.2228  
+    sig_y=5.00, sig_r=3.00, R=8         1.0807        1.0766  
+    sig_y=5.00, sig_r=3.00, R=9        0.95865       0.96154  
+    sig_y=5.00, sig_r=3.00, R=10       0.88982       0.86873  
+    sig_y=5.00, sig_r=4.00, R=1         9.8737        9.7561  
+    sig_y=5.00, sig_r=4.00, R=2         5.9057        6.0606  
+    sig_y=5.00, sig_r=4.00, R=3         4.4733        4.3956  
+    sig_y=5.00, sig_r=4.00, R=4         3.5025        3.4483  
+    sig_y=5.00, sig_r=4.00, R=5         2.8521        2.8369  
+    sig_y=5.00, sig_r=4.00, R=6          2.432        2.4096  
+    sig_y=5.00, sig_r=4.00, R=7         2.1374        2.0942  
+    sig_y=5.00, sig_r=4.00, R=8         1.8554        1.8519  
+    sig_y=5.00, sig_r=4.00, R=9         1.6543        1.6598  
+    sig_y=5.00, sig_r=4.00, R=10        1.5136        1.5038  
+    sig_y=5.00, sig_r=5.00, R=1         12.749          12.5  
+    sig_y=5.00, sig_r=5.00, R=2         8.4376        8.3333  
+    sig_y=5.00, sig_r=5.00, R=3         6.2133          6.25  
+    sig_y=5.00, sig_r=5.00, R=4         5.0499             5  
+    sig_y=5.00, sig_r=5.00, R=5         4.1116        4.1667  
+    sig_y=5.00, sig_r=5.00, R=6         3.6237        3.5714  
+    sig_y=5.00, sig_r=5.00, R=7         3.1381         3.125  
+    sig_y=5.00, sig_r=5.00, R=8         2.8987        2.7778  
+    sig_y=5.00, sig_r=5.00, R=9         2.5818           2.5  
+    sig_y=5.00, sig_r=5.00, R=10        2.2762        2.2727  
+    sig_y=5.00, sig_r=6.00, R=1         14.798        14.754  
+    sig_y=5.00, sig_r=6.00, R=2         10.318        10.465  
+    sig_y=5.00, sig_r=6.00, R=3         8.0411        8.1081  
+    sig_y=5.00, sig_r=6.00, R=4          6.584        6.6176  
+    sig_y=5.00, sig_r=6.00, R=5         5.4941        5.5901  
+    sig_y=5.00, sig_r=6.00, R=6         4.7243        4.8387  
+    sig_y=5.00, sig_r=6.00, R=7         4.3701        4.2654  
+    sig_y=5.00, sig_r=6.00, R=8         3.8058        3.8136  
+    sig_y=5.00, sig_r=6.00, R=9         3.4099        3.4483  
+    sig_y=5.00, sig_r=6.00, R=10        3.1194        3.1469  
+    sig_y=5.00, sig_r=7.00, R=1          16.45        16.554  
+    sig_y=5.00, sig_r=7.00, R=2         12.552        12.374  
+    sig_y=5.00, sig_r=7.00, R=3         9.8031         9.879  
+    sig_y=5.00, sig_r=7.00, R=4         8.1631        8.2215  
+    sig_y=5.00, sig_r=7.00, R=5         6.9895        7.0402  
+    sig_y=5.00, sig_r=7.00, R=6         6.0693        6.1558  
+    sig_y=5.00, sig_r=7.00, R=7         5.4622        5.4688  
+    sig_y=5.00, sig_r=7.00, R=8         5.0078        4.9197  
+    sig_y=5.00, sig_r=7.00, R=9         4.5167        4.4708  
+    sig_y=5.00, sig_r=7.00, R=10        3.9503         4.097  
+    sig_y=5.00, sig_r=8.00, R=1         18.221        17.978  
+    sig_y=5.00, sig_r=8.00, R=2         14.264        14.035  
+    sig_y=5.00, sig_r=8.00, R=3         11.452        11.511  
+    sig_y=5.00, sig_r=8.00, R=4         9.5954        9.7561  
+    sig_y=5.00, sig_r=8.00, R=5         8.1893        8.4656  
+    sig_y=5.00, sig_r=8.00, R=6         7.5941        7.4766  
+    sig_y=5.00, sig_r=8.00, R=7         6.5809        6.6946  
+    sig_y=5.00, sig_r=8.00, R=8         6.0486        6.0606  
+    sig_y=5.00, sig_r=8.00, R=9         5.5043        5.5363  
+    sig_y=5.00, sig_r=8.00, R=10        5.2116        5.0955  
+    sig_y=5.00, sig_r=9.00, R=1           18.9        19.104  
+    sig_y=5.00, sig_r=9.00, R=2         15.537        15.458  
+    sig_y=5.00, sig_r=9.00, R=3         12.922        12.981  
+    sig_y=5.00, sig_r=9.00, R=4         11.534        11.188  
+    sig_y=5.00, sig_r=9.00, R=5         9.9342        9.8301  
+    sig_y=5.00, sig_r=9.00, R=6         8.7662        8.7662  
+    sig_y=5.00, sig_r=9.00, R=7         7.8618        7.9102  
+    sig_y=5.00, sig_r=9.00, R=8         7.2112        7.2064  
+    sig_y=5.00, sig_r=9.00, R=9         6.7079        6.6176  
+    sig_y=5.00, sig_r=9.00, R=10        6.1812        6.1178  
+    sig_y=5.00, sig_r=10.00, R=1        20.246            20  
+    sig_y=5.00, sig_r=10.00, R=2        16.787        16.667  
+    sig_y=5.00, sig_r=10.00, R=3        14.686        14.286  
+    sig_y=5.00, sig_r=10.00, R=4        12.492          12.5  
+    sig_y=5.00, sig_r=10.00, R=5        11.145        11.111  
+    sig_y=5.00, sig_r=10.00, R=6        9.9608            10  
+    sig_y=5.00, sig_r=10.00, R=7        9.3017        9.0909  
+    sig_y=5.00, sig_r=10.00, R=8        8.3333        8.3333  
+    sig_y=5.00, sig_r=10.00, R=9        7.8432        7.6923  
+    sig_y=5.00, sig_r=10.00, R=10       7.1635        7.1429  
+    sig_y=6.00, sig_r=1.00, R=1          0.988       0.97297  
+    sig_y=6.00, sig_r=1.00, R=2        0.49205       0.49315  
+    sig_y=6.00, sig_r=1.00, R=3        0.32996       0.33028  
+    sig_y=6.00, sig_r=1.00, R=4        0.24377       0.24828  
+    sig_y=6.00, sig_r=1.00, R=5        0.20001        0.1989  
+    sig_y=6.00, sig_r=1.00, R=6        0.16462        0.1659  
+    sig_y=6.00, sig_r=1.00, R=7        0.14243       0.14229  
+    sig_y=6.00, sig_r=1.00, R=8        0.12493       0.12457  
+    sig_y=6.00, sig_r=1.00, R=9        0.11137       0.11077  
+    sig_y=6.00, sig_r=1.00, R=10      0.099975      0.099723  
+    sig_y=6.00, sig_r=2.00, R=1         3.5964           3.6  
+    sig_y=6.00, sig_r=2.00, R=2         1.9001        1.8947  
+    sig_y=6.00, sig_r=2.00, R=3         1.3102        1.2857  
+    sig_y=6.00, sig_r=2.00, R=4        0.94073       0.97297  
+    sig_y=6.00, sig_r=2.00, R=5        0.78844       0.78261  
+    sig_y=6.00, sig_r=2.00, R=6        0.66088       0.65455  
+    sig_y=6.00, sig_r=2.00, R=7        0.55256        0.5625  
+    sig_y=6.00, sig_r=2.00, R=8        0.48221       0.49315  
+    sig_y=6.00, sig_r=2.00, R=9        0.43268       0.43902  
+    sig_y=6.00, sig_r=2.00, R=10       0.38632        0.3956  
+    sig_y=6.00, sig_r=3.00, R=1         7.3097           7.2  
+    sig_y=6.00, sig_r=3.00, R=2         3.9459             4  
+    sig_y=6.00, sig_r=3.00, R=3         2.7741        2.7692  
+    sig_y=6.00, sig_r=3.00, R=4         2.1107        2.1176  
+    sig_y=6.00, sig_r=3.00, R=5         1.7527        1.7143  
+    sig_y=6.00, sig_r=3.00, R=6         1.4388          1.44  
+    sig_y=6.00, sig_r=3.00, R=7         1.2408        1.2414  
+    sig_y=6.00, sig_r=3.00, R=8         1.1182        1.0909  
+    sig_y=6.00, sig_r=3.00, R=9        0.95837       0.97297  
+    sig_y=6.00, sig_r=3.00, R=10       0.88161       0.87805  
+    sig_y=6.00, sig_r=4.00, R=1         11.175        11.077  
+    sig_y=6.00, sig_r=4.00, R=2         6.4075        6.5455  
+    sig_y=6.00, sig_r=4.00, R=3         4.7262        4.6452  
+    sig_y=6.00, sig_r=4.00, R=4         3.5955           3.6  
+    sig_y=6.00, sig_r=4.00, R=5         2.9207        2.9388  
+    sig_y=6.00, sig_r=4.00, R=6          2.483        2.4828  
+    sig_y=6.00, sig_r=4.00, R=7         2.1896        2.1493  
+    sig_y=6.00, sig_r=4.00, R=8         1.8849        1.8947  
+    sig_y=6.00, sig_r=4.00, R=9         1.6653        1.6941  
+    sig_y=6.00, sig_r=4.00, R=10        1.5553        1.5319  
+    sig_y=6.00, sig_r=5.00, R=1         15.056        14.754  
+    sig_y=6.00, sig_r=5.00, R=2         9.2093        9.2784  
+    sig_y=6.00, sig_r=5.00, R=3         6.8213        6.7669  
+    sig_y=6.00, sig_r=5.00, R=4         5.3753        5.3254  
+    sig_y=6.00, sig_r=5.00, R=5           4.33        4.3902  
+    sig_y=6.00, sig_r=5.00, R=6            3.7        3.7344  
+    sig_y=6.00, sig_r=5.00, R=7         3.2557        3.2491  
+    sig_y=6.00, sig_r=5.00, R=8         2.9039        2.8754  
+    sig_y=6.00, sig_r=5.00, R=9         2.5835        2.5788  
+    sig_y=6.00, sig_r=5.00, R=10         2.329        2.3377  
+    sig_y=6.00, sig_r=6.00, R=1         18.059            18  
+    sig_y=6.00, sig_r=6.00, R=2         11.608            12  
+    sig_y=6.00, sig_r=6.00, R=3          8.926             9  
+    sig_y=6.00, sig_r=6.00, R=4         7.3176           7.2  
+    sig_y=6.00, sig_r=6.00, R=5         5.9473             6  
+    sig_y=6.00, sig_r=6.00, R=6         5.1345        5.1429  
+    sig_y=6.00, sig_r=6.00, R=7         4.5696           4.5  
+    sig_y=6.00, sig_r=6.00, R=8         3.9536             4  
+    sig_y=6.00, sig_r=6.00, R=9          3.534           3.6  
+    sig_y=6.00, sig_r=6.00, R=10        3.3226        3.2727  
+    sig_y=6.00, sig_r=7.00, R=1         20.756        20.753  
+    sig_y=6.00, sig_r=7.00, R=2         14.505        14.579  
+    sig_y=6.00, sig_r=7.00, R=3         11.389        11.236  
+    sig_y=6.00, sig_r=7.00, R=4         8.8145        9.1399  
+    sig_y=6.00, sig_r=7.00, R=5         7.8897        7.7031  
+    sig_y=6.00, sig_r=7.00, R=6          6.627        6.6566  
+    sig_y=6.00, sig_r=7.00, R=7         5.8211        5.8605  
+    sig_y=6.00, sig_r=7.00, R=8         5.2604        5.2344  
+    sig_y=6.00, sig_r=7.00, R=9         4.7082        4.7292  
+    sig_y=6.00, sig_r=7.00, R=10        4.1848         4.313  
+    sig_y=6.00, sig_r=8.00, R=1         22.782         23.04  
+    sig_y=6.00, sig_r=8.00, R=2         16.834        16.941  
+    sig_y=6.00, sig_r=8.00, R=3         13.229        13.395  
+    sig_y=6.00, sig_r=8.00, R=4         11.026        11.077  
+    sig_y=6.00, sig_r=8.00, R=5         9.5409        9.4426  
+    sig_y=6.00, sig_r=8.00, R=6         8.3741        8.2286  
+    sig_y=6.00, sig_r=8.00, R=7         7.2344        7.2911  
+    sig_y=6.00, sig_r=8.00, R=8         6.6487        6.5455  
+    sig_y=6.00, sig_r=8.00, R=9         5.9809        5.9381  
+    sig_y=6.00, sig_r=8.00, R=10        5.5646         5.434  
+    sig_y=6.00, sig_r=9.00, R=1         25.142        24.923  
+    sig_y=6.00, sig_r=9.00, R=2         19.141        19.059  
+    sig_y=6.00, sig_r=9.00, R=3         15.386        15.429  
+    sig_y=6.00, sig_r=9.00, R=4         12.805         12.96  
+    sig_y=6.00, sig_r=9.00, R=5         10.958        11.172  
+    sig_y=6.00, sig_r=9.00, R=6         9.6412        9.8182  
+    sig_y=6.00, sig_r=9.00, R=7         8.8107        8.7568  
+    sig_y=6.00, sig_r=9.00, R=8         7.9845        7.9024  
+    sig_y=6.00, sig_r=9.00, R=9         7.1153           7.2  
+    sig_y=6.00, sig_r=9.00, R=10        6.6371        6.6122  
+    sig_y=6.00, sig_r=10.00, R=1         26.75        26.471  
+    sig_y=6.00, sig_r=10.00, R=2        21.039         20.93  
+    sig_y=6.00, sig_r=10.00, R=3        17.013        17.308  
+    sig_y=6.00, sig_r=10.00, R=4        15.158        14.754  
+    sig_y=6.00, sig_r=10.00, R=5         13.01        12.857  
+    sig_y=6.00, sig_r=10.00, R=6        11.464        11.392  
+    sig_y=6.00, sig_r=10.00, R=7        10.067        10.227  
+    sig_y=6.00, sig_r=10.00, R=8        9.2414        9.2784  
+    sig_y=6.00, sig_r=10.00, R=9        8.4836        8.4906  
+    sig_y=6.00, sig_r=10.00, R=10       7.8524        7.8261  
+    sig_y=7.00, sig_r=1.00, R=1        0.97917          0.98  
+    sig_y=7.00, sig_r=1.00, R=2         0.4965       0.49495  
+    sig_y=7.00, sig_r=1.00, R=3        0.33299       0.33108  
+    sig_y=7.00, sig_r=1.00, R=4        0.25107       0.24873  
+    sig_y=7.00, sig_r=1.00, R=5        0.19879       0.19919  
+    sig_y=7.00, sig_r=1.00, R=6        0.16594        0.1661  
+    sig_y=7.00, sig_r=1.00, R=7         0.1431       0.14244  
+    sig_y=7.00, sig_r=1.00, R=8        0.12138       0.12468  
+    sig_y=7.00, sig_r=1.00, R=9        0.11209       0.11086  
+    sig_y=7.00, sig_r=1.00, R=10       0.10014      0.099796  
+    sig_y=7.00, sig_r=2.00, R=1         3.6678        3.6981  
+    sig_y=7.00, sig_r=2.00, R=2         1.9354        1.9216  
+    sig_y=7.00, sig_r=2.00, R=3         1.3176         1.298  
+    sig_y=7.00, sig_r=2.00, R=4           1.01          0.98  
+    sig_y=7.00, sig_r=2.00, R=5        0.78727       0.78715  
+    sig_y=7.00, sig_r=2.00, R=6        0.64428       0.65772  
+    sig_y=7.00, sig_r=2.00, R=7        0.56351       0.56484  
+    sig_y=7.00, sig_r=2.00, R=8        0.49255       0.49495  
+    sig_y=7.00, sig_r=2.00, R=9         0.4454       0.44045  
+    sig_y=7.00, sig_r=2.00, R=10       0.39825       0.39676  
+    sig_y=7.00, sig_r=3.00, R=1         7.5431        7.6034  
+    sig_y=7.00, sig_r=3.00, R=2         4.1277        4.1215  
+    sig_y=7.00, sig_r=3.00, R=3         2.7974        2.8269  
+    sig_y=7.00, sig_r=3.00, R=4         2.1453        2.1512  
+    sig_y=7.00, sig_r=3.00, R=5         1.7378        1.7362  
+    sig_y=7.00, sig_r=3.00, R=6         1.4459        1.4554  
+    sig_y=7.00, sig_r=3.00, R=7         1.2551        1.2528  
+    sig_y=7.00, sig_r=3.00, R=8         1.0965        1.0998  
+    sig_y=7.00, sig_r=3.00, R=9        0.96455          0.98  
+    sig_y=7.00, sig_r=3.00, R=10       0.89942       0.88377  
+    sig_y=7.00, sig_r=4.00, R=1          12.05        12.062  
+    sig_y=7.00, sig_r=4.00, R=2         6.9471        6.8772  
+    sig_y=7.00, sig_r=4.00, R=3          4.851        4.8098  
+    sig_y=7.00, sig_r=4.00, R=4         3.6777        3.6981  
+    sig_y=7.00, sig_r=4.00, R=5         3.0775        3.0038  
+    sig_y=7.00, sig_r=4.00, R=6         2.5136         2.529  
+    sig_y=7.00, sig_r=4.00, R=7         2.2543        2.1838  
+    sig_y=7.00, sig_r=4.00, R=8         1.9398        1.9216  
+    sig_y=7.00, sig_r=4.00, R=9         1.7066        1.7155  
+    sig_y=7.00, sig_r=4.00, R=10        1.5504        1.5494  
+    sig_y=7.00, sig_r=5.00, R=1         16.253        16.554  
+    sig_y=7.00, sig_r=5.00, R=2         9.9091        9.9593  
+    sig_y=7.00, sig_r=5.00, R=3         7.0375        7.1221  
+    sig_y=7.00, sig_r=5.00, R=4         5.5741         5.543  
+    sig_y=7.00, sig_r=5.00, R=5         4.5637         4.537  
+    sig_y=7.00, sig_r=5.00, R=6         3.9108        3.8401  
+    sig_y=7.00, sig_r=5.00, R=7         3.3035        3.3288  
+    sig_y=7.00, sig_r=5.00, R=8         2.8996        2.9376  
+    sig_y=7.00, sig_r=5.00, R=9         2.6399        2.6288  
+    sig_y=7.00, sig_r=5.00, R=10        2.3978        2.3786  
+    sig_y=7.00, sig_r=6.00, R=1         20.939        20.753  
+    sig_y=7.00, sig_r=6.00, R=2         13.098        13.164  
+    sig_y=7.00, sig_r=6.00, R=3         9.6899        9.6393  
+    sig_y=7.00, sig_r=6.00, R=4         7.5994        7.6034  
+    sig_y=7.00, sig_r=6.00, R=5         6.2366        6.2776  
+    sig_y=7.00, sig_r=6.00, R=6         5.4819        5.3455  
+    sig_y=7.00, sig_r=6.00, R=7         4.7094        4.6544  
+    sig_y=7.00, sig_r=6.00, R=8         4.1447        4.1215  
+    sig_y=7.00, sig_r=6.00, R=9         3.6877        3.6981  
+    sig_y=7.00, sig_r=6.00, R=10        3.3794        3.3536  
+    sig_y=7.00, sig_r=7.00, R=1         24.299          24.5  
+    sig_y=7.00, sig_r=7.00, R=2         16.259        16.333  
+    sig_y=7.00, sig_r=7.00, R=3         12.364         12.25  
+    sig_y=7.00, sig_r=7.00, R=4         9.8595           9.8  
+    sig_y=7.00, sig_r=7.00, R=5         8.2256        8.1667  
+    sig_y=7.00, sig_r=7.00, R=6         7.1811             7  
+    sig_y=7.00, sig_r=7.00, R=7         6.1638         6.125  
+    sig_y=7.00, sig_r=7.00, R=8         5.3406        5.4444  
+    sig_y=7.00, sig_r=7.00, R=9         4.9874           4.9  
+    sig_y=7.00, sig_r=7.00, R=10         4.454        4.4545  
+    sig_y=7.00, sig_r=8.00, R=1          27.64        27.752  
+    sig_y=7.00, sig_r=8.00, R=2         19.401        19.358  
+    sig_y=7.00, sig_r=8.00, R=3         14.754        14.863  
+    sig_y=7.00, sig_r=8.00, R=4         12.069        12.062  
+    sig_y=7.00, sig_r=8.00, R=5         10.494        10.149  
+    sig_y=7.00, sig_r=8.00, R=6          8.751        8.7598  
+    sig_y=7.00, sig_r=8.00, R=7         7.6554        7.7052  
+    sig_y=7.00, sig_r=8.00, R=8         6.8191        6.8772  
+    sig_y=7.00, sig_r=8.00, R=9         6.1646        6.2099  
+    sig_y=7.00, sig_r=8.00, R=10        5.6677        5.6606  
+    sig_y=7.00, sig_r=9.00, R=1         30.678        30.531  
+    sig_y=7.00, sig_r=9.00, R=2         22.066        22.173  
+    sig_y=7.00, sig_r=9.00, R=3         17.581        17.408  
+    sig_y=7.00, sig_r=9.00, R=4         14.263        14.329  
+    sig_y=7.00, sig_r=9.00, R=5         12.232        12.175  
+    sig_y=7.00, sig_r=9.00, R=6         10.636        10.584  
+    sig_y=7.00, sig_r=9.00, R=7         9.3501        9.3608  
+    sig_y=7.00, sig_r=9.00, R=8         8.6115        8.3911  
+    sig_y=7.00, sig_r=9.00, R=9         7.4656        7.6034  
+    sig_y=7.00, sig_r=9.00, R=10        6.9153         6.951  
+    sig_y=7.00, sig_r=10.00, R=1        32.644        32.886  
+    sig_y=7.00, sig_r=10.00, R=2        24.572        24.747  
+    sig_y=7.00, sig_r=10.00, R=3        20.276        19.838  
+    sig_y=7.00, sig_r=10.00, R=4        16.874        16.554  
+    sig_y=7.00, sig_r=10.00, R=5         14.09        14.203  
+    sig_y=7.00, sig_r=10.00, R=6        12.358        12.437  
+    sig_y=7.00, sig_r=10.00, R=7        11.107        11.061  
+    sig_y=7.00, sig_r=10.00, R=8        10.044        9.9593  
+    sig_y=7.00, sig_r=10.00, R=9        9.0851        9.0573  
+    sig_y=7.00, sig_r=10.00, R=10       8.5408        8.3051  
+    sig_y=8.00, sig_r=1.00, R=1        0.96352       0.98462  
+    sig_y=8.00, sig_r=1.00, R=2        0.50481       0.49612  
+    sig_y=8.00, sig_r=1.00, R=3        0.32115       0.33161  
+    sig_y=8.00, sig_r=1.00, R=4        0.25107       0.24903  
+    sig_y=8.00, sig_r=1.00, R=5        0.20036       0.19938  
+    sig_y=8.00, sig_r=1.00, R=6        0.16684       0.16623  
+    sig_y=8.00, sig_r=1.00, R=7        0.14382       0.14254  
+    sig_y=8.00, sig_r=1.00, R=8        0.12157       0.12476  
+    sig_y=8.00, sig_r=1.00, R=9        0.11007       0.11092  
+    sig_y=8.00, sig_r=1.00, R=10       0.10033      0.099844  
+    sig_y=8.00, sig_r=2.00, R=1         3.7212        3.7647  
+    sig_y=8.00, sig_r=2.00, R=2         1.9619        1.9394  
+    sig_y=8.00, sig_r=2.00, R=3         1.2944        1.3061  
+    sig_y=8.00, sig_r=2.00, R=4        0.97559       0.98462  
+    sig_y=8.00, sig_r=2.00, R=5        0.78989       0.79012  
+    sig_y=8.00, sig_r=2.00, R=6        0.64196       0.65979  
+    sig_y=8.00, sig_r=2.00, R=7         0.5732       0.56637  
+    sig_y=8.00, sig_r=2.00, R=8        0.49092       0.49612  
+    sig_y=8.00, sig_r=2.00, R=9        0.44248       0.44138  
+    sig_y=8.00, sig_r=2.00, R=10         0.395       0.39752  
+    sig_y=8.00, sig_r=3.00, R=1         7.9743        7.8904  
+    sig_y=8.00, sig_r=3.00, R=2         4.0894        4.2044  
+    sig_y=8.00, sig_r=3.00, R=3         2.8998        2.8657  
+    sig_y=8.00, sig_r=3.00, R=4         2.1734        2.1736  
+    sig_y=8.00, sig_r=3.00, R=5         1.7656        1.7508  
+    sig_y=8.00, sig_r=3.00, R=6         1.4925        1.4656  
+    sig_y=8.00, sig_r=3.00, R=7         1.2342        1.2604  
+    sig_y=8.00, sig_r=3.00, R=8         1.0961        1.1056  
+    sig_y=8.00, sig_r=3.00, R=9        0.99045       0.98462  
+    sig_y=8.00, sig_r=3.00, R=10       0.89098       0.88752  
+    sig_y=8.00, sig_r=4.00, R=1         12.439          12.8  
+    sig_y=8.00, sig_r=4.00, R=2         7.2462        7.1111  
+    sig_y=8.00, sig_r=4.00, R=3         5.0344        4.9231  
+    sig_y=8.00, sig_r=4.00, R=4         3.7953        3.7647  
+    sig_y=8.00, sig_r=4.00, R=5         3.1054        3.0476  
+    sig_y=8.00, sig_r=4.00, R=6         2.6044          2.56  
+    sig_y=8.00, sig_r=4.00, R=7         2.2119        2.2069  
+    sig_y=8.00, sig_r=4.00, R=8         1.9372        1.9394  
+    sig_y=8.00, sig_r=4.00, R=9         1.7426        1.7297  
+    sig_y=8.00, sig_r=4.00, R=10        1.5485         1.561  
+    sig_y=8.00, sig_r=5.00, R=1         17.856        17.978  
+    sig_y=8.00, sig_r=5.00, R=2         10.556        10.458  
+    sig_y=8.00, sig_r=5.00, R=3         7.4638        7.3733  
+    sig_y=8.00, sig_r=5.00, R=4         5.6508         5.694  
+    sig_y=8.00, sig_r=5.00, R=5         4.6835        4.6377  
+    sig_y=8.00, sig_r=5.00, R=6         3.8555         3.912  
+    sig_y=8.00, sig_r=5.00, R=7         3.3836        3.3827  
+    sig_y=8.00, sig_r=5.00, R=8         3.0165        2.9795  
+    sig_y=8.00, sig_r=5.00, R=9         2.6559        2.6622  
+    sig_y=8.00, sig_r=5.00, R=10        2.3808         2.406  
+    sig_y=8.00, sig_r=6.00, R=1         22.989         23.04  
+    sig_y=8.00, sig_r=6.00, R=2         14.263        14.049  
+    sig_y=8.00, sig_r=6.00, R=3         10.108        10.105  
+    sig_y=8.00, sig_r=6.00, R=4         8.0172        7.8904  
+    sig_y=8.00, sig_r=6.00, R=5         6.5195        6.4719  
+    sig_y=8.00, sig_r=6.00, R=6         5.3953        5.4857  
+    sig_y=8.00, sig_r=6.00, R=7         4.7407        4.7603  
+    sig_y=8.00, sig_r=6.00, R=8         4.1296        4.2044  
+    sig_y=8.00, sig_r=6.00, R=9         3.6886        3.7647  
+    sig_y=8.00, sig_r=6.00, R=10        3.4548        3.4083  
+    sig_y=8.00, sig_r=7.00, R=1         27.566        27.752  
+    sig_y=8.00, sig_r=7.00, R=2         17.724        17.718  
+    sig_y=8.00, sig_r=7.00, R=3         12.757        13.012  
+    sig_y=8.00, sig_r=7.00, R=4         10.083        10.282  
+    sig_y=8.00, sig_r=7.00, R=5         8.5527        8.4986  
+    sig_y=8.00, sig_r=7.00, R=6         7.4927        7.2425  
+    sig_y=8.00, sig_r=7.00, R=7         6.3083        6.3099  
+    sig_y=8.00, sig_r=7.00, R=8         5.5813          5.59  
+    sig_y=8.00, sig_r=7.00, R=9         4.8258        5.0176  
+    sig_y=8.00, sig_r=7.00, R=10        4.4481        4.5515  
+    sig_y=8.00, sig_r=8.00, R=1         31.224            32  
+    sig_y=8.00, sig_r=8.00, R=2         21.608        21.333  
+    sig_y=8.00, sig_r=8.00, R=3         16.014            16  
+    sig_y=8.00, sig_r=8.00, R=4         12.589          12.8  
+    sig_y=8.00, sig_r=8.00, R=5         10.547        10.667  
+    sig_y=8.00, sig_r=8.00, R=6         9.1192        9.1429  
+    sig_y=8.00, sig_r=8.00, R=7         8.1449             8  
+    sig_y=8.00, sig_r=8.00, R=8         7.1976        7.1111  
+    sig_y=8.00, sig_r=8.00, R=9         6.3518           6.4  
+    sig_y=8.00, sig_r=8.00, R=10        5.7517        5.8182  
+    sig_y=8.00, sig_r=9.00, R=1         35.907        35.752  
+    sig_y=8.00, sig_r=9.00, R=2         25.051        24.804  
+    sig_y=8.00, sig_r=9.00, R=3         18.811        18.989  
+    sig_y=8.00, sig_r=9.00, R=4         15.653        15.383  
+    sig_y=8.00, sig_r=9.00, R=5         13.273        12.928  
+    sig_y=8.00, sig_r=9.00, R=6         11.328        11.148  
+    sig_y=8.00, sig_r=9.00, R=7         9.8957        9.7996  
+    sig_y=8.00, sig_r=9.00, R=8         8.7147         8.742  
+    sig_y=8.00, sig_r=9.00, R=9         7.8945        7.8904  
+    sig_y=8.00, sig_r=9.00, R=10        7.2572          7.19  
+    sig_y=8.00, sig_r=10.00, R=1         39.45        39.024  
+    sig_y=8.00, sig_r=10.00, R=2        28.507         28.07  
+    sig_y=8.00, sig_r=10.00, R=3        21.334        21.918  
+    sig_y=8.00, sig_r=10.00, R=4        18.149        17.978  
+    sig_y=8.00, sig_r=10.00, R=5        15.411        15.238  
+    sig_y=8.00, sig_r=10.00, R=6        13.466        13.223  
+    sig_y=8.00, sig_r=10.00, R=7        11.426        11.679  
+    sig_y=8.00, sig_r=10.00, R=8        10.372        10.458  
+    sig_y=8.00, sig_r=10.00, R=9        9.2202        9.4675  
+    sig_y=8.00, sig_r=10.00, R=10       8.8016        8.6486  
+    sig_y=9.00, sig_r=1.00, R=1        0.98468        0.9878  
+    sig_y=9.00, sig_r=1.00, R=2        0.50838       0.49693  
+    sig_y=9.00, sig_r=1.00, R=3        0.34319       0.33197  
+    sig_y=9.00, sig_r=1.00, R=4        0.24854       0.24923  
+    sig_y=9.00, sig_r=1.00, R=5        0.19433       0.19951  
+    sig_y=9.00, sig_r=1.00, R=6        0.16579       0.16632  
+    sig_y=9.00, sig_r=1.00, R=7        0.14144       0.14261  
+    sig_y=9.00, sig_r=1.00, R=8         0.1247       0.12481  
+    sig_y=9.00, sig_r=1.00, R=9        0.11121       0.11096  
+    sig_y=9.00, sig_r=1.00, R=10       0.10019      0.099877  
+    sig_y=9.00, sig_r=2.00, R=1         3.7617        3.8118  
+    sig_y=9.00, sig_r=2.00, R=2         1.9671        1.9518  
+    sig_y=9.00, sig_r=2.00, R=3          1.267        1.3117  
+    sig_y=9.00, sig_r=2.00, R=4        0.98119        0.9878  
+    sig_y=9.00, sig_r=2.00, R=5        0.79892       0.79218  
+    sig_y=9.00, sig_r=2.00, R=6        0.66863       0.66122  
+    sig_y=9.00, sig_r=2.00, R=7        0.56123       0.56743  
+    sig_y=9.00, sig_r=2.00, R=8        0.50111       0.49693  
+    sig_y=9.00, sig_r=2.00, R=9        0.43456       0.44202  
+    sig_y=9.00, sig_r=2.00, R=10       0.39609       0.39803  
+    sig_y=9.00, sig_r=3.00, R=1         8.2687           8.1  
+    sig_y=9.00, sig_r=3.00, R=2         4.2252        4.2632  
+    sig_y=9.00, sig_r=3.00, R=3         2.8739        2.8929  
+    sig_y=9.00, sig_r=3.00, R=4         2.1975        2.1892  
+    sig_y=9.00, sig_r=3.00, R=5         1.7419        1.7609  
+    sig_y=9.00, sig_r=3.00, R=6         1.4802        1.4727  
+    sig_y=9.00, sig_r=3.00, R=7         1.2544        1.2656  
+    sig_y=9.00, sig_r=3.00, R=8         1.1242        1.1096  
+    sig_y=9.00, sig_r=3.00, R=9        0.97638        0.9878  
+    sig_y=9.00, sig_r=3.00, R=10       0.88488       0.89011  
+    sig_y=9.00, sig_r=4.00, R=1         13.268        13.361  
+    sig_y=9.00, sig_r=4.00, R=2         7.4018        7.2809  
+    sig_y=9.00, sig_r=4.00, R=3         4.8333        5.0039  
+    sig_y=9.00, sig_r=4.00, R=4         3.8888        3.8118  
+    sig_y=9.00, sig_r=4.00, R=5         3.0864        3.0784  
+    sig_y=9.00, sig_r=4.00, R=6          2.495        2.5817  
+    sig_y=9.00, sig_r=4.00, R=7         2.2106         2.223  
+    sig_y=9.00, sig_r=4.00, R=8         1.9561        1.9518  
+    sig_y=9.00, sig_r=4.00, R=9         1.7066        1.7396  
+    sig_y=9.00, sig_r=4.00, R=10        1.5938         1.569  
+    sig_y=9.00, sig_r=5.00, R=1         18.979        19.104  
+    sig_y=9.00, sig_r=5.00, R=2         11.097        10.829  
+    sig_y=9.00, sig_r=5.00, R=3         7.6591         7.556  
+    sig_y=9.00, sig_r=5.00, R=4           5.84        5.8023  
+    sig_y=9.00, sig_r=5.00, R=5         4.6064        4.7093  
+    sig_y=9.00, sig_r=5.00, R=6         3.9254        3.9628  
+    sig_y=9.00, sig_r=5.00, R=7         3.3993        3.4206  
+    sig_y=9.00, sig_r=5.00, R=8         2.9656        3.0089  
+    sig_y=9.00, sig_r=5.00, R=9         2.6907        2.6857  
+    sig_y=9.00, sig_r=5.00, R=10        2.4599        2.4251  
+    sig_y=9.00, sig_r=6.00, R=1         24.461        24.923  
+    sig_y=9.00, sig_r=6.00, R=2         14.425        14.727  
+    sig_y=9.00, sig_r=6.00, R=3          10.06        10.452  
+    sig_y=9.00, sig_r=6.00, R=4         8.0119           8.1  
+    sig_y=9.00, sig_r=6.00, R=5         6.7324        6.6122  
+    sig_y=9.00, sig_r=6.00, R=6         5.4849        5.5862  
+    sig_y=9.00, sig_r=6.00, R=7         4.8375        4.8358  
+    sig_y=9.00, sig_r=6.00, R=8         4.2219        4.2632  
+    sig_y=9.00, sig_r=6.00, R=9         3.7952        3.8118  
+    sig_y=9.00, sig_r=6.00, R=10        3.4721        3.4468  
+    sig_y=9.00, sig_r=7.00, R=1         30.228        30.531  
+    sig_y=9.00, sig_r=7.00, R=2         19.852         18.81  
+    sig_y=9.00, sig_r=7.00, R=3         13.607        13.592  
+    sig_y=9.00, sig_r=7.00, R=4         10.594        10.641  
+    sig_y=9.00, sig_r=7.00, R=5         8.9434        8.7423  
+    sig_y=9.00, sig_r=7.00, R=6         7.3923        7.4187  
+    sig_y=9.00, sig_r=7.00, R=7         6.4269        6.4432  
+    sig_y=9.00, sig_r=7.00, R=8         5.6271        5.6944  
+    sig_y=9.00, sig_r=7.00, R=9         5.0683        5.1015  
+    sig_y=9.00, sig_r=7.00, R=10        4.6031        4.6205  
+    sig_y=9.00, sig_r=8.00, R=1         36.243        35.752  
+    sig_y=9.00, sig_r=8.00, R=2         23.321        22.938  
+    sig_y=9.00, sig_r=8.00, R=3         17.067        16.886  
+    sig_y=9.00, sig_r=8.00, R=4         13.371        13.361  
+    sig_y=9.00, sig_r=8.00, R=5         10.979        11.053  
+    sig_y=9.00, sig_r=8.00, R=6         9.3827        9.4255  
+    sig_y=9.00, sig_r=8.00, R=7         8.2711        8.2155  
+    sig_y=9.00, sig_r=8.00, R=8         7.2643        7.2809  
+    sig_y=9.00, sig_r=8.00, R=9         6.3549        6.5372  
+    sig_y=9.00, sig_r=8.00, R=10        6.0795        5.9314  
+    sig_y=9.00, sig_r=9.00, R=1         39.794          40.5  
+    sig_y=9.00, sig_r=9.00, R=2         26.969            27  
+    sig_y=9.00, sig_r=9.00, R=3         20.464         20.25  
+    sig_y=9.00, sig_r=9.00, R=4         15.836          16.2  
+    sig_y=9.00, sig_r=9.00, R=5         13.271          13.5  
+    sig_y=9.00, sig_r=9.00, R=6         11.564        11.571  
+    sig_y=9.00, sig_r=9.00, R=7         10.235        10.125  
+    sig_y=9.00, sig_r=9.00, R=8         9.0913             9  
+    sig_y=9.00, sig_r=9.00, R=9         8.1888           8.1  
+    sig_y=9.00, sig_r=9.00, R=10          7.38        7.3636  
+    sig_y=9.00, sig_r=10.00, R=1         45.69        44.751  
+    sig_y=9.00, sig_r=10.00, R=2        30.854        30.916  
+    sig_y=9.00, sig_r=10.00, R=3        23.657        23.615  
+    sig_y=9.00, sig_r=10.00, R=4        19.409        19.104  
+    sig_y=9.00, sig_r=10.00, R=5        16.344         16.04  
+    sig_y=9.00, sig_r=10.00, R=6        13.894        13.823  
+    sig_y=9.00, sig_r=10.00, R=7        12.241        12.144  
+    sig_y=9.00, sig_r=10.00, R=8        10.784        10.829  
+    sig_y=9.00, sig_r=10.00, R=9        9.7553        9.7708  
+    sig_y=9.00, sig_r=10.00, R=10       8.9367        8.9011  
+    sig_y=10.00, sig_r=1.00, R=1       0.96613        0.9901  
+    sig_y=10.00, sig_r=1.00, R=2        0.4983       0.49751  
+    sig_y=10.00, sig_r=1.00, R=3       0.34208       0.33223  
+    sig_y=10.00, sig_r=1.00, R=4       0.25403       0.24938  
+    sig_y=10.00, sig_r=1.00, R=5       0.19874        0.1996  
+    sig_y=10.00, sig_r=1.00, R=6       0.16418       0.16639  
+    sig_y=10.00, sig_r=1.00, R=7       0.14357       0.14265  
+    sig_y=10.00, sig_r=1.00, R=8       0.12409       0.12484  
+    sig_y=10.00, sig_r=1.00, R=9       0.10821       0.11099  
+    sig_y=10.00, sig_r=1.00, R=10      0.10147        0.0999  
+    sig_y=10.00, sig_r=2.00, R=1        3.9121        3.8462  
+    sig_y=10.00, sig_r=2.00, R=2         1.993        1.9608  
+    sig_y=10.00, sig_r=2.00, R=3        1.3266        1.3158  
+    sig_y=10.00, sig_r=2.00, R=4        0.9917        0.9901  
+    sig_y=10.00, sig_r=2.00, R=5       0.79655       0.79365  
+    sig_y=10.00, sig_r=2.00, R=6       0.67411       0.66225  
+    sig_y=10.00, sig_r=2.00, R=7       0.55639       0.56818  
+    sig_y=10.00, sig_r=2.00, R=8       0.48945       0.49751  
+    sig_y=10.00, sig_r=2.00, R=9        0.4485       0.44248  
+    sig_y=10.00, sig_r=2.00, R=10      0.39466       0.39841  
+    sig_y=10.00, sig_r=3.00, R=1        8.3141        8.2569  
+    sig_y=10.00, sig_r=3.00, R=2        4.3971        4.3062  
+    sig_y=10.00, sig_r=3.00, R=3        2.9155        2.9126  
+    sig_y=10.00, sig_r=3.00, R=4        2.1742        2.2005  
+    sig_y=10.00, sig_r=3.00, R=5        1.7946        1.7682  
+    sig_y=10.00, sig_r=3.00, R=6        1.4745        1.4778  
+    sig_y=10.00, sig_r=3.00, R=7        1.2685        1.2694  
+    sig_y=10.00, sig_r=3.00, R=8        1.0974        1.1125  
+    sig_y=10.00, sig_r=3.00, R=9        1.0153        0.9901  
+    sig_y=10.00, sig_r=3.00, R=10      0.88181       0.89197  
+    sig_y=10.00, sig_r=4.00, R=1        13.718        13.793  
+    sig_y=10.00, sig_r=4.00, R=2        7.1867        7.4074  
+    sig_y=10.00, sig_r=4.00, R=3        4.9876        5.0633  
+    sig_y=10.00, sig_r=4.00, R=4        3.8597        3.8462  
+    sig_y=10.00, sig_r=4.00, R=5        3.0966        3.1008  
+    sig_y=10.00, sig_r=4.00, R=6        2.5165        2.5974  
+    sig_y=10.00, sig_r=4.00, R=7        2.2861        2.2346  
+    sig_y=10.00, sig_r=4.00, R=8        2.0001        1.9608  
+    sig_y=10.00, sig_r=4.00, R=9        1.7509        1.7467  
+    sig_y=10.00, sig_r=4.00, R=10       1.5782        1.5748  
+    sig_y=10.00, sig_r=5.00, R=1        20.046            20  
+    sig_y=10.00, sig_r=5.00, R=2        11.141        11.111  
+    sig_y=10.00, sig_r=5.00, R=3        7.6955        7.6923  
+    sig_y=10.00, sig_r=5.00, R=4        5.7821        5.8824  
+    sig_y=10.00, sig_r=5.00, R=5        4.7723        4.7619  
+    sig_y=10.00, sig_r=5.00, R=6        4.0637             4  
+    sig_y=10.00, sig_r=5.00, R=7        3.4625        3.4483  
+    sig_y=10.00, sig_r=5.00, R=8        3.0172        3.0303  
+    sig_y=10.00, sig_r=5.00, R=9        2.7575        2.7027  
+    sig_y=10.00, sig_r=5.00, R=10        2.435         2.439  
+    sig_y=10.00, sig_r=6.00, R=1        27.187        26.471  
+    sig_y=10.00, sig_r=6.00, R=2         14.94        15.254  
+    sig_y=10.00, sig_r=6.00, R=3        10.672        10.714  
+    sig_y=10.00, sig_r=6.00, R=4        8.1827        8.2569  
+    sig_y=10.00, sig_r=6.00, R=5          6.67        6.7164  
+    sig_y=10.00, sig_r=6.00, R=6        5.6477        5.6604  
+    sig_y=10.00, sig_r=6.00, R=7         5.029        4.8913  
+    sig_y=10.00, sig_r=6.00, R=8        4.4786        4.3062  
+    sig_y=10.00, sig_r=6.00, R=9        3.7608        3.8462  
+    sig_y=10.00, sig_r=6.00, R=10       3.5733        3.4749  
+    sig_y=10.00, sig_r=7.00, R=1        32.493        32.886  
+    sig_y=10.00, sig_r=7.00, R=2        19.427        19.679  
+    sig_y=10.00, sig_r=7.00, R=3        13.915         14.04  
+    sig_y=10.00, sig_r=7.00, R=4        10.845        10.913  
+    sig_y=10.00, sig_r=7.00, R=5        8.8273        8.9253  
+    sig_y=10.00, sig_r=7.00, R=6        7.6003        7.5501  
+    sig_y=10.00, sig_r=7.00, R=7        6.4886        6.5421  
+    sig_y=10.00, sig_r=7.00, R=8        5.7796        5.7715  
+    sig_y=10.00, sig_r=7.00, R=9        5.1281        5.1633  
+    sig_y=10.00, sig_r=7.00, R=10       4.6706        4.6711  
+    sig_y=10.00, sig_r=8.00, R=1        38.508        39.024  
+    sig_y=10.00, sig_r=8.00, R=2         24.39        24.242  
+    sig_y=10.00, sig_r=8.00, R=3        17.695        17.582  
+    sig_y=10.00, sig_r=8.00, R=4        13.985        13.793  
+    sig_y=10.00, sig_r=8.00, R=5        11.232        11.348  
+    sig_y=10.00, sig_r=8.00, R=6        9.5094        9.6386  
+    sig_y=10.00, sig_r=8.00, R=7        8.5685         8.377  
+    sig_y=10.00, sig_r=8.00, R=8        7.3735        7.4074  
+    sig_y=10.00, sig_r=8.00, R=9         6.599         6.639  
+    sig_y=10.00, sig_r=8.00, R=10       5.8767         6.015  
+    sig_y=10.00, sig_r=9.00, R=1        44.059        44.751  
+    sig_y=10.00, sig_r=9.00, R=2        28.776        28.826  
+    sig_y=10.00, sig_r=9.00, R=3         20.89         21.26  
+    sig_y=10.00, sig_r=9.00, R=4        16.827         16.84  
+    sig_y=10.00, sig_r=9.00, R=5        14.066        13.941  
+    sig_y=10.00, sig_r=9.00, R=6         11.83        11.894  
+    sig_y=10.00, sig_r=9.00, R=7        10.413        10.371  
+    sig_y=10.00, sig_r=9.00, R=8        9.3419        9.1941  
+    sig_y=10.00, sig_r=9.00, R=9        8.3575        8.2569  
+    sig_y=10.00, sig_r=9.00, R=10       7.6735        7.4931  
+    sig_y=10.00, sig_r=10.00, R=1       49.767            50  
+    sig_y=10.00, sig_r=10.00, R=2       33.636        33.333  
+    sig_y=10.00, sig_r=10.00, R=3       25.221            25  
+    sig_y=10.00, sig_r=10.00, R=4       19.984            20  
+    sig_y=10.00, sig_r=10.00, R=5       16.695        16.667  
+    sig_y=10.00, sig_r=10.00, R=6       14.247        14.286  
+    sig_y=10.00, sig_r=10.00, R=7        12.64          12.5  
+    sig_y=10.00, sig_r=10.00, R=8       11.092        11.111  
+    sig_y=10.00, sig_r=10.00, R=9       10.193            10  
+    sig_y=10.00, sig_r=10.00, R=10      9.2288        9.0909  
+
+</pre><img vspace="5" hspace="5" src="proj2_02.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% ECE302 Proj 2
+% (L)MMSE estimators;
+% Jonathan Lam & Steven Lee
+clc; clear; close all;
+set(0, 'defaultTextInterpreter', 'latex');
+
+%% 1a
+N = 1e6;
+
+Y = 2*rand(N, 1) - 1;
+W = 4*rand(N, 1) - 2;
+
+X = Y + W;
+
+% piecewise estimators
+X1 = X < -1;
+X2 = (X >= -1) & (X <= 1);
+X3 = X > 1;
+Y1 = (1 + X(X1)) / 2;
+Y2 = zeros(size(X(X2)));
+Y3 = (-1 + X(X3)) / 2;
+
+X = [X(X1); X(X2); X(X3)];
+Y = [Y(X1); Y(X2); Y(X3)];
+Y_est = [Y1; Y2; Y3];
+Y_err = (Y - Y_est).^2;
+
+% for plotting empirical piecewise MSE as a function of X
+Y_X_err = sortrows([X Y_err]);
+Y_X_err(:,2) = movmean(Y_X_err(:,2), N/1e2);
+
+figure('Position', [0 0 1000 1000]);
+tiledlayout(1, 1, 'TileSpacing', 'tight');
+hold on;
+
+% plot all X vs error data
+scatter(X, Y_err);
+
+% plot piecewise MSE
+x = -3:1e-2:-1;
+plot(x, (3+x).^2/12, 'k');
+x = -1:1e-2:1;
+plot(x, 1/3*ones(size(x)), 'k', 'HandleVisibility', 'off');
+x = 1:1e-2:3;
+plot(x, (3-x).^2/12, 'k', 'HandleVisibility', 'off');
+
+% plot empirical piecewise MSE
+plot(Y_X_err(:,1), Y_X_err(:,2), 'r');
+
+legend({'Squared Error', 'Theoretical MSE', 'Empirical MSE (moving average)'});
+xlabel('Observed $$X$$');
+ylabel('$$(\hat{Y}(X)-Y)^2$$');
+title('Error in estimate vs. observed $$X$$');
+
+% calculate empirical MSE
+MSE_emp = mean(Y_err);
+
+%% 1b
+Y_lin = X/5;
+LMSE_emp = mean((Y_lin - Y).^2);
+
+%table making
+display(table([1/4; 4/15], [MSE_emp; LMSE_emp], ...
+	'VariableNames', {'Theoretical', 'Empirical'}, ...
+	'RowNames', {'MMSE', 'LMMSE'}))
+
+%% 2
+clear;
+N = 1e4;
+mu_y = 1;
+sig_ys = 1:10;
+sig_rs = 1:10;
+Rs = 1:10;		% R is the number of observations
+
+% calculate all da results
+res = [];
+row_labels = {};
+i = 1;
+for sig_y_ind = 1:length(sig_ys)
+for sig_r_ind = 1:length(sig_rs)
+for R_ind = 1:length(Rs)
+	sig_y = sig_ys(sig_y_ind);
+	sig_r = sig_rs(sig_r_ind);
+	R = Rs(R_ind);
+	[emp, theo] = calc_llmse(mu_y, sig_y, sig_r, N, R);
+	res(R_ind, sig_r_ind, sig_y_ind, :) = [emp, theo];
+	row_labels{i} = sprintf('sig_y=%.2f, sig_r=%.2f, R=%d', sig_y, sig_r, R);
+	i = i + 1;
+end
+end
+end
+
+% plotting slices of the result vector
+figure('Position', [0 0 1200 400]);
+tiledlayout(1, 3, 'TileSpacing', 'tight');
+% plot MSE vs R
+nexttile();
+mvr = reshape(res(:, 5, 5, :), [], 2);
+plot(Rs, mvr(:,1), Rs, mvr(:,2));
+xlabel('Number of observations');
+ylabel('LMMSE');
+title('LMMSE vs. Number of observations ($$\sigma_y=\sigma_r=5$$)');
+legend({'Empirical LMMSE', 'Theoretical LMMSE'});
+% plot MSE vs sig_y
+nexttile();
+mvsy = reshape(res(5, :, 5, :), [], 2);
+plot(sig_ys, mvsy(:,1), sig_ys, mvsy(:,2));
+xlabel('$$\sigma_y$$');
+ylabel('LMMSE');
+title('LMMSE vs. $$\sigma_y$$ ($$R=\sigma_r=5$$)');
+legend({'Empirical LMMSE', 'Theoretical LMMSE'});
+% plot MSE vs sig_r
+nexttile();
+mvsr = reshape(res(5, 5, :, :), [], 2);
+plot(sig_rs, mvsr(:,1), sig_rs, mvsr(:,2));
+xlabel('$$\sigma_r$$');
+ylabel('LMMSE');
+title('LMMSE vs. $$\sigma_r$$ ($$R=\sigma_y=5$$)');
+legend({'Empirical LMMSE', 'Theoretical LMMSE'});
+
+% displaying results in a table
+res = reshape(res, [], 2);
+display(table(res(:,1), res(:,2), ...
+	'VariableNames', {'Empirical', 'Theoretical'}, 'RowNames', row_labels))
+
+% function to help with calculations at different values of the parameters
+function [emp, theo] = calc_llmse(mu_y, sig_y, sig_r, N, R)
+	Y_gaus = mu_y + sig_y * randn(N, 1);
+	R_gaus = sig_r * randn(N, R);
+	X = Y_gaus + R_gaus;
+
+	% solve normal equation C_XX*a=C_XY (8.70)
+	C_XX = sig_y^2 * ones(R) + sig_r^2 * eye(R);
+	C_XY = sig_y^2 * ones(R, 1);
+% 	a = C_XX^-1 * C_XY;
+    a = C_XX \ C_XY;
+
+	% 8.74: comes from requirement that Yhat_lin is unbiased
+	% (same as 8.60 assuming that mu_x=mu_y since mu_r=0)
+	a0 = mu_y * (1 - sum(a));
+
+	Y_gaus_est = a0 + sum(a.' .* X, 2);
+
+	% empirical MSE
+	emp = mean((Y_gaus_est - Y_gaus).^2);
+
+	% 8.73: theoretical associated MSE
+	theo = sig_y^2 - C_XY.' * C_XX^-1 * C_XY;
+end
+##### SOURCE END #####
+--></body></html>

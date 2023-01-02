@@ -1,0 +1,408 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<base href="/assets/ece302/">
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>proj3</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-03-30"><meta name="DC.source" content="proj3.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Q1</a></li><li><a href="#3">Q2</a></li><li><a href="#4">show histogram to visually see which distribution fits better</a></li><li><a href="#5">helper function to run experiment</a></li></ul></div><pre class="codeinput"><span class="comment">% ECE302 -- Project 4</span>
+<span class="comment">% Steven Lee &amp; Jonathan Lam</span>
+clc; clear; close <span class="string">all</span>;
+set(0, <span class="string">'defaultTextInterpreter'</span>, <span class="string">'latex'</span>);
+
+<span class="comment">% ML estimate function for alpha in rayleigh RV</span>
+est_fn_ray = @(samples) sqrt(mean(samples.^2)/2);
+</pre><h2 id="2">Q1</h2><pre class="codeinput"><span class="comment">% values to loop over</span>
+Ns = logspace(1, 5, 5);
+params = 1:4;
+
+<span class="comment">% one plot for exponential, one for rayleigh</span>
+figure(<span class="string">'Position'</span>, [0 0 750 1000]);
+t1 = tiledlayout(length(params), 3);
+sgtitle(<span class="string">"Exponential R.V."</span>);
+
+figure(<span class="string">'Position'</span>, [0 0 750 1000]);
+t2 = tiledlayout(length(params), 3);
+sgtitle(<span class="string">"Rayleigh R.V."</span>);
+
+<span class="keyword">for</span> param=params
+    exp_res = zeros(length(Ns), 3);
+    ray_res = zeros(length(Ns), 3);
+
+    <span class="keyword">for</span> Ni=1:length(Ns)
+        <span class="keyword">for</span> M=100
+            N = Ns(Ni);
+
+            [exp_bias, exp_var, exp_mse] = <span class="keyword">...</span>
+                run_experiment(N, M, param, @exprnd, @mean);
+            [ray_bias, ray_var, ray_mse] = <span class="keyword">...</span>
+                run_experiment(N, M, param, @raylrnd, est_fn_ray);
+
+            exp_res(Ni, :) = [exp_bias exp_var exp_mse];
+            ray_res(Ni, :) = [ray_bias ray_var ray_mse];
+
+            fprintf(<span class="string">"N=%d param=%d: %f %f %f; %f %f %f\n"</span>, <span class="keyword">...</span>
+                N, param, <span class="keyword">...</span>
+                exp_bias, exp_var, exp_mse, <span class="keyword">...</span>
+                ray_bias, ray_var, ray_mse);
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+    <span class="comment">% for exponential</span>
+    nexttile(t1);
+    semilogx(Ns, exp_res(:,1));
+    title(sprintf(<span class="string">'Bias ($$\\mu=%d$$)'</span>, param));
+    xlabel(<span class="string">"Samples"</span>);
+    ylabel(<span class="string">"$$E[\hat\mu-\mu]$$"</span>);
+    grid <span class="string">on</span>;
+
+    nexttile(t1);
+    loglog(Ns, exp_res(:,2));
+    title(<span class="string">'Variance'</span>);
+    xlabel(<span class="string">"Samples"</span>);
+    ylabel(<span class="string">"$$E[(\hat\mu-\bar{\hat\mu})^2]$$"</span>);
+    grid <span class="string">on</span>;
+
+    nexttile(t1);
+    loglog(Ns, exp_res(:,3));
+    title(<span class="string">'MSE'</span>);
+    xlabel(<span class="string">"Samples"</span>);
+    ylabel(<span class="string">"$$E[(\hat\mu-\mu)^2]$$"</span>);
+    grid <span class="string">on</span>;
+
+    <span class="comment">% for rayleigh</span>
+    nexttile(t2);
+    semilogx(Ns, ray_res(:,1));
+    title(sprintf(<span class="string">'Bias ($$\\alpha=%d$$)'</span>, param));
+    xlabel(<span class="string">"Samples"</span>);
+    ylabel(<span class="string">"$$E[\hat\alpha-\alpha]$$"</span>);
+    grid <span class="string">on</span>;
+
+    nexttile(t2);
+    loglog(Ns, ray_res(:,2));
+    title(<span class="string">'Variance'</span>);
+    xlabel(<span class="string">"Samples"</span>);
+    ylabel(<span class="string">"$$E[(\hat\alpha-\bar{\hat\alpha})^2]$$"</span>);
+    grid <span class="string">on</span>;
+
+    nexttile(t2);
+    loglog(Ns, ray_res(:,3));
+    title(<span class="string">'MSE'</span>);
+    xlabel(<span class="string">"Samples"</span>);
+    ylabel(<span class="string">"$$E[(\hat\alpha-\alpha)^2]$$"</span>);
+    grid <span class="string">on</span>;
+<span class="keyword">end</span>
+
+<span class="comment">% Explanation of figures:</span>
+<span class="comment">% - The first figure is for the exponential R.V., the other for Rayleigh.</span>
+<span class="comment">% - Each column represents one value of the parameter (mu or lambda).</span>
+<span class="comment">% - For each value of the parameter, multiple (10) trials of different</span>
+<span class="comment">%   sample sizes (N={10,100,1000,10000,100000}) were used. The bias,</span>
+<span class="comment">%   variance, and MSE of the estimator was taken from these.</span>
+<span class="comment">% - Each plot plots N (number of samples) on the x-axis vs. the specified</span>
+<span class="comment">%   metric.</span>
+</pre><img vspace="5" hspace="5" src="proj3_01.png" alt=""> <img vspace="5" hspace="5" src="proj3_02.png" alt=""> <h2 id="3">Q2</h2><pre class="codeinput">load(<span class="string">'data'</span>);
+data = data.';      <span class="comment">% need a column vector</span>
+
+<span class="comment">% range of values of data</span>
+x = linspace(min(data), max(data), 1000);
+
+mu_est = mean(data);
+alpha_est = est_fn_ray(data);
+
+lambda_est = 1/mu_est;
+exp_pdf = @(x) lambda_est * exp(-lambda_est * x);
+
+alpha2_est = alpha_est^2;
+ray_pdf = @(x) x/alpha2_est .* exp(-x.^2/(2*alpha2_est));
+
+<span class="comment">% see which distribution generates the higher likelihood</span>
+<span class="comment">% (use sum of log-likelihoods, also can use product of likelihoods)</span>
+exp_likelihood = sum(log(exp_pdf(data)));
+ray_likelihood = sum(log(ray_pdf(data)));
+
+<span class="comment">% rayleigh has higher likelihood, so it is the more likely distribution</span>
+fprintf(<span class="string">"Log-likelihood of exponential distribution: %f\n"</span> <span class="keyword">...</span>
+    + <span class="string">"Log-likelihood of rayleigh distribution: %f\n"</span>, <span class="keyword">...</span>
+    exp_likelihood, ray_likelihood);
+</pre><pre class="codeoutput">Log-likelihood of exponential distribution: 1053.462453
+Log-likelihood of rayleigh distribution: 1365.516070
+</pre><h2 id="4">show histogram to visually see which distribution fits better</h2><pre class="codeinput">figure();
+hold <span class="string">on</span>;
+histogram(data, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+plot(x, exp_pdf(x));
+plot(x, ray_pdf(x));
+legend([<span class="string">"Sample data (normalized to PDF)"</span>, <span class="keyword">...</span>
+    sprintf(<span class="string">"Exponential PDF (mu=%f)"</span>, mu_est), <span class="keyword">...</span>
+    sprintf(<span class="string">"Rayleigh PDF (alpha=%f)"</span>, alpha_est)]);
+title(<span class="string">"Data vs. Exponential and Rayleigh ML-Estimated Distributions"</span>);
+ylabel(<span class="string">"PDF"</span>);
+xlabel(<span class="string">"Values"</span>);
+
+<span class="comment">% we see that the histogram closely matches the Rayleigh distribution,</span>
+<span class="comment">% so it most likely is drawn from this distribution</span>
+</pre><img vspace="5" hspace="5" src="proj3_03.png" alt=""> <h2 id="5">helper function to run experiment</h2><pre class="codeinput"><span class="comment">% N = number of samples</span>
+<span class="comment">% M = number of trials</span>
+<span class="comment">% param = actual parameter</span>
+<span class="comment">% randfn = function to generate random samples</span>
+<span class="comment">% estfn = calculate ML estimate of parameter given samples</span>
+<span class="keyword">function</span> [bias, variance, mse] = run_experiment(N, M, param, randfn, estfn)
+    <span class="comment">% generate M samples of N values sampled from the distribution</span>
+    samples = randfn(param, N, M);
+
+    <span class="comment">% generate ML estimate of variable</span>
+    est = estfn(samples);
+
+    bias = mean(est) - param;
+    variance = var(est);
+    mse = variance + bias^2;
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">N=10 param=1: 0.002574 0.078209 0.078215; -0.009523 0.028445 0.028536
+N=100 param=1: 0.007988 0.011183 0.011247; -0.005721 0.002533 0.002566
+N=1000 param=1: 0.000378 0.001286 0.001286; -0.001020 0.000293 0.000294
+N=10000 param=1: -0.000920 0.000098 0.000099; -0.000426 0.000024 0.000025
+N=100000 param=1: 0.000247 0.000008 0.000008; 0.000111 0.000002 0.000002
+N=10 param=2: -0.040950 0.283109 0.284785; 0.011830 0.122604 0.122744
+N=100 param=2: -0.007575 0.048410 0.048468; -0.024112 0.009429 0.010010
+N=1000 param=2: -0.005067 0.004940 0.004965; 0.003536 0.000870 0.000883
+N=10000 param=2: -0.000388 0.000466 0.000466; 0.000211 0.000100 0.000100
+N=100000 param=2: 0.000116 0.000036 0.000036; -0.000221 0.000014 0.000014
+N=10 param=3: -0.043354 0.686853 0.688733; -0.028280 0.211181 0.211981
+N=100 param=3: -0.104062 0.082007 0.092836; 0.005258 0.020529 0.020557
+N=1000 param=3: -0.013672 0.009392 0.009579; -0.005131 0.002462 0.002488
+N=10000 param=3: -0.005534 0.000959 0.000990; 0.000608 0.000229 0.000229
+N=100000 param=3: -0.000150 0.000119 0.000119; -0.000005 0.000019 0.000019
+N=10 param=4: 0.127984 1.551503 1.567883; -0.033811 0.389189 0.390333
+N=100 param=4: 0.019660 0.182156 0.182542; -0.060038 0.042804 0.046409
+N=1000 param=4: 0.011553 0.015798 0.015931; -0.005465 0.003734 0.003764
+N=10000 param=4: 0.006851 0.001716 0.001763; 0.001879 0.000401 0.000405
+N=100000 param=4: 0.001641 0.000162 0.000164; -0.000130 0.000040 0.000040
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+% ECE302 REPLACE_WITH_DASH_DASH Project 4
+% Steven Lee & Jonathan Lam
+clc; clear; close all;
+set(0, 'defaultTextInterpreter', 'latex');
+
+% ML estimate function for alpha in rayleigh RV
+est_fn_ray = @(samples) sqrt(mean(samples.^2)/2);
+
+%% Q1
+
+% values to loop over
+Ns = logspace(1, 5, 5);
+params = 1:4;
+
+% one plot for exponential, one for rayleigh
+figure('Position', [0 0 750 1000]);
+t1 = tiledlayout(length(params), 3);
+sgtitle("Exponential R.V.");
+
+figure('Position', [0 0 750 1000]);
+t2 = tiledlayout(length(params), 3);
+sgtitle("Rayleigh R.V.");
+
+for param=params
+    exp_res = zeros(length(Ns), 3);
+    ray_res = zeros(length(Ns), 3);
+    
+    for Ni=1:length(Ns)
+        for M=100
+            N = Ns(Ni);
+            
+            [exp_bias, exp_var, exp_mse] = ...
+                run_experiment(N, M, param, @exprnd, @mean);
+            [ray_bias, ray_var, ray_mse] = ...
+                run_experiment(N, M, param, @raylrnd, est_fn_ray);
+            
+            exp_res(Ni, :) = [exp_bias exp_var exp_mse];
+            ray_res(Ni, :) = [ray_bias ray_var ray_mse];
+
+            fprintf("N=%d param=%d: %f %f %f; %f %f %f\n", ...
+                N, param, ...
+                exp_bias, exp_var, exp_mse, ...
+                ray_bias, ray_var, ray_mse);
+        end
+    end
+
+    % for exponential
+    nexttile(t1);
+    semilogx(Ns, exp_res(:,1));
+    title(sprintf('Bias ($$\\mu=%d$$)', param));
+    xlabel("Samples");
+    ylabel("$$E[\hat\mu-\mu]$$");
+    grid on;
+    
+    nexttile(t1);
+    loglog(Ns, exp_res(:,2));
+    title('Variance');
+    xlabel("Samples");
+    ylabel("$$E[(\hat\mu-\bar{\hat\mu})^2]$$");
+    grid on;
+    
+    nexttile(t1);
+    loglog(Ns, exp_res(:,3));
+    title('MSE');
+    xlabel("Samples");
+    ylabel("$$E[(\hat\mu-\mu)^2]$$");
+    grid on;
+    
+    % for rayleigh
+    nexttile(t2);
+    semilogx(Ns, ray_res(:,1));
+    title(sprintf('Bias ($$\\alpha=%d$$)', param));
+    xlabel("Samples");
+    ylabel("$$E[\hat\alpha-\alpha]$$");
+    grid on;
+    
+    nexttile(t2);
+    loglog(Ns, ray_res(:,2));
+    title('Variance');
+    xlabel("Samples");
+    ylabel("$$E[(\hat\alpha-\bar{\hat\alpha})^2]$$");
+    grid on;
+    
+    nexttile(t2);
+    loglog(Ns, ray_res(:,3));
+    title('MSE');
+    xlabel("Samples");
+    ylabel("$$E[(\hat\alpha-\alpha)^2]$$");
+    grid on;
+end
+
+% Explanation of figures:
+% - The first figure is for the exponential R.V., the other for Rayleigh.
+% - Each column represents one value of the parameter (mu or lambda).
+% - For each value of the parameter, multiple (10) trials of different
+%   sample sizes (N={10,100,1000,10000,100000}) were used. The bias,
+%   variance, and MSE of the estimator was taken from these.
+% - Each plot plots N (number of samples) on the x-axis vs. the specified
+%   metric.
+
+
+%% Q2
+load('data');
+data = data.';      % need a column vector
+
+% range of values of data
+x = linspace(min(data), max(data), 1000);
+
+mu_est = mean(data);
+alpha_est = est_fn_ray(data);
+
+lambda_est = 1/mu_est;
+exp_pdf = @(x) lambda_est * exp(-lambda_est * x);
+
+alpha2_est = alpha_est^2;
+ray_pdf = @(x) x/alpha2_est .* exp(-x.^2/(2*alpha2_est));
+
+% see which distribution generates the higher likelihood
+% (use sum of log-likelihoods, also can use product of likelihoods)
+exp_likelihood = sum(log(exp_pdf(data)));
+ray_likelihood = sum(log(ray_pdf(data)));
+
+% rayleigh has higher likelihood, so it is the more likely distribution
+fprintf("Log-likelihood of exponential distribution: %f\n" ...
+    + "Log-likelihood of rayleigh distribution: %f\n", ...
+    exp_likelihood, ray_likelihood);
+
+%% show histogram to visually see which distribution fits better
+figure();
+hold on;
+histogram(data, 'Normalization', 'pdf');
+plot(x, exp_pdf(x));
+plot(x, ray_pdf(x));
+legend(["Sample data (normalized to PDF)", ...
+    sprintf("Exponential PDF (mu=%f)", mu_est), ...
+    sprintf("Rayleigh PDF (alpha=%f)", alpha_est)]);
+title("Data vs. Exponential and Rayleigh ML-Estimated Distributions");
+ylabel("PDF");
+xlabel("Values");
+
+% we see that the histogram closely matches the Rayleigh distribution,
+% so it most likely is drawn from this distribution
+
+
+%% helper function to run experiment
+
+% N = number of samples
+% M = number of trials
+% param = actual parameter
+% randfn = function to generate random samples
+% estfn = calculate ML estimate of parameter given samples
+function [bias, variance, mse] = run_experiment(N, M, param, randfn, estfn)
+    % generate M samples of N values sampled from the distribution
+    samples = randfn(param, N, M);
+    
+    % generate ML estimate of variable
+    est = estfn(samples);
+    
+    bias = mean(est) - param;
+    variance = var(est);
+    mse = variance + bias^2;
+end
+##### SOURCE END #####
+--></body></html>
